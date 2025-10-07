@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package proto.common;
+
+option java_multiple_files = true;
+option java_package = "com.bannote.userservice.proto.common";
+option java_outer_classname = "EnumsProto";
+
+// 유저 타입
+enum UserType {
+  USER_TYPE_UNSPECIFIED = 0;
+  STUDENT = 1;
+  EMPLOYEE = 2;
+}
+
+enum UserStatus {
+  USER_STATUS_UNSPECIFIED = 0;
+  PENDING = 1;
+  ACTIVE = 2;
+  GRADUATED = 3;
+  LEAVE = 4;
+  SUSPENDED = 5;
+  WITHDRAWN = 6;
+  EXPELLED = 7;
+}
+
+enum StudentClassStatus {
+  STUDENT_CLASS_STATUS_UNSPECIFIED = 0;
+  STUDENT_CLASS_ACTIVE = 1;
+  STUDENT_CLASS_GRADUATED = 2;
+}

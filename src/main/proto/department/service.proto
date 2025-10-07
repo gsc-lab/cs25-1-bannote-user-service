@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package proto.department;
+
+import "department/department.proto";
+
+option java_multiple_files = true;
+option java_package = "com.bannote.userservice.proto.department";
+option java_outer_classname = "DepartmentServiceProto";
+
+// The department service definition.
+service DepartmentService {
+//  학과 ID로 학과 조회 API
+  rpc GetDepartment (GetDepartmentRequest) returns (Department) {
+  }
+
+//  학과 생성 API
+  rpc CreateDepartment (CreateDepartmentRequest) returns (Department) {
+  }
+
+//  학과 수정 API
+  rpc UpdateDepartment (UpdateDepartmentRequest) returns (Department) {
+  }
+
+//  학과 삭제 API
+  rpc DeleteDepartment (DeleteDepartmentRequest) returns (Department) {
+  }
+
+//  학과 목록 조회 API
+  rpc ListDepartments (ListDepartmentsRequest) returns (ListDepartmentsResponse) {
+  }
+}
+
+// 학과 조회 시 필요한 정보
+message GetDepartmentRequest {
+  int64 id = 1;
+}
+
+// 학과 생성 시 필요한 정보
+message CreateDepartmentRequest {
+  string name = 1;
+}
+
+// 학과 수정 시 필요한 정보
+message UpdateDepartmentRequest {
+  int64 id = 1;
+  optional string name = 2;
+}
+
+// 학과 삭제 시 필요한 정보
+message DeleteDepartmentRequest {
+  int64 id = 1;
+}
+
+// 학과 목록 조회 시 필요한 정보
+message ListDepartmentsRequest {
+  int32 page = 1;
+  int32 size = 2;
+}
+
+// 학과 목록 조회 응답
+message ListDepartmentsResponse {
+  repeated Department departments = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 size = 4;
+}
