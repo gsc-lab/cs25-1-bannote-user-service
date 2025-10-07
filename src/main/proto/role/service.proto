@@ -3,6 +3,7 @@ syntax = "proto3";
 package proto.role;
 
 import "role/role.proto";
+import "common/enums.proto";
 
 option java_multiple_files = true;
 option java_package = "com.bannote.userservice.proto.role";
@@ -15,81 +16,33 @@ option java_outer_classname = "RoleServiceProto";
 // The role service definition.
 service RoleService {
 
-//  권한 생성 API
-  rpc CreateRole (CreateRoleRequest) returns (Role) {
-  }
-
-//  권한 수정 API
-  rpc UpdateRole (UpdateRoleRequest) returns (Role) {
-  }
-
-//  권한 삭제 API
-  rpc DeleteRole (DeleteRoleRequest) returns (Role) {
-  }
-
-//  권한 목록 조회 API
-  rpc ListRoles (ListRolesRequest) returns (ListRolesResponse) {
-  }
-
 //  유저에게 권한 부여 API
-  rpc AssignRoleToUser (AssignRoleToUserRequest) returns (UserRole) {
+  rpc AssignRoleToUser (AssignRoleToUserRequest) returns (UserRoleMapping) {
   }
 
 //  유저에게서 권한 제거 API
-  rpc RemoveRoleFromUser (RemoveRoleFromUserRequest) returns (UserRole) {
+  rpc RemoveRoleFromUser (RemoveRoleFromUserRequest) returns (UserRoleMapping) {
   }
 
 //  유저의 권한 목록 조회 API
   rpc ListUserRoles (ListUserRolesRequest) returns (ListUserRolesResponse) {
   }
 
-//  유저가 특정 권한을 가지고 있는지 확인 API (내부용)
-  rpc CheckUserHasRole (CheckUserHasRoleRequest) returns (CheckUserHasRoleResponse) {
+//  유저가 특정 권한 레벨을 충족하는지 확인 API (내부용)
+  rpc CheckUserHasAuthority (CheckUserHasAuthorityRequest) returns (CheckUserHasAuthorityResponse) {
   }
-}
-
-// 권한 생성 시 필요한 정보
-message CreateRoleRequest {
-  string name = 1;
-  string description = 2;
-}
-
-// 권한 수정 시 필요한 정보
-message UpdateRoleRequest {
-  int64 id = 1;
-  optional string name = 2;
-  optional string description = 3;
-}
-
-// 권한 삭제 시 필요한 정보
-message DeleteRoleRequest {
-  int64 id = 1;
-}
-
-// 권한 목록 조회 시 필요한 정보
-message ListRolesRequest {
-  int32 page = 1;
-  int32 size = 2;
-}
-
-// 권한 목록 조회 응답
-message ListRolesResponse {
-  repeated Role roles = 1;
-  int32 total_count = 2;
-  int32 page = 3;
-  int32 size = 4;
 }
 
 // 유저에게 권한 부여 시 필요한 정보
 message AssignRoleToUserRequest {
   int64 user_id = 1;
-  int64 role_id = 2;
+  proto.common.UserRole role = 2;
 }
 
 // 유저에게서 권한 제거 시 필요한 정보
 message RemoveRoleFromUserRequest {
   int64 user_id = 1;
-  int64 role_id = 2;
+  proto.common.UserRole role = 2;
 }
 
 // 유저의 권한 목록 조회 시 필요한 정보
@@ -99,16 +52,17 @@ message ListUserRolesRequest {
 
 // 유저의 권한 목록 조회 응답
 message ListUserRolesResponse {
-  repeated Role roles = 1;
+  repeated proto.common.UserRole roles = 1;
 }
 
-// 유저 권한 확인 요청
-message CheckUserHasRoleRequest {
+// 유저 권한 레벨 확인 요청
+message CheckUserHasAuthorityRequest {
   int64 user_id = 1;
-  int64 role_id = 2;
+  int32 required_level = 2;  // 30이면 반대표(30) 이상 권한 필요
 }
 
-// 유저 권한 확인 응답
-message CheckUserHasRoleResponse {
-  bool has_role = 1;
+// 유저 권한 레벨 확인 응답
+message CheckUserHasAuthorityResponse {
+  bool has_authority = 1;
+  int32 highest_level = 2;  // 유저가 보유한 최고 권한 레벨
 }

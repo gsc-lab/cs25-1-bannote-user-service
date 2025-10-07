@@ -29,3 +29,13 @@ enum StudentClassStatus {
   STUDENT_CLASS_ACTIVE = 1;
   STUDENT_CLASS_GRADUATED = 2;
 }
+
+enum UserRole {
+  USER_ROLE_UNSPECIFIED = 0;
+  USER_ROLE_STUDENT = 1;        // 학생
+  USER_ROLE_DOORKEEPER = 2;     // 키지기
+  USER_ROLE_CLASS_REP = 3;      // 반대표
+  USER_ROLE_TA = 4;             // 조교
+  USER_ROLE_PROFESSOR = 5;      // 교수
+  USER_ROLE_ADMIN = 6;          // 관리자
+}

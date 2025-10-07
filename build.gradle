@@ -80,3 +80,7 @@ sourceSets {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.withType(ProcessResources) {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

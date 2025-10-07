@@ -3,24 +3,16 @@ syntax = "proto3";
 package proto.role;
 
 import "google/protobuf/timestamp.proto";
+import "common/enums.proto";
 
 option java_multiple_files = true;
 option java_package = "com.bannote.userservice.proto.role";
 option java_outer_classname = "RoleMessageProto";
 
-// 권한
-message Role {
-  int64 id = 1;
-  string name = 2;
-  string description = 3;
-  google.protobuf.Timestamp created_at = 4;
-  google.protobuf.Timestamp deleted_at = 5;
-}
-
 // 유저-권한 매핑
-message UserRole {
+message UserRoleMapping {
   int64 id = 1;
   int64 user_id = 2;
-  int64 role_id = 3;
+  proto.common.UserRole role = 3;
   google.protobuf.Timestamp created_at = 4;
 }
