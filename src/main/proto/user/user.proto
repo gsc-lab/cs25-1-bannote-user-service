@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package proto.user;
+
+import "google/protobuf/timestamp.proto";
+import "common/enums.proto";
+
+option java_multiple_files = true;
+option java_package = "com.bannote.userservice.proto.user";
+option java_outer_classname = "UserMessageProto";
+
+// 학생의 경우 유저 정보에 포함하여 반환
+message Student {
+  int64 id = 1;
+  int64 user_id = 2;
+  int64 student_class_id = 3;
+}
+
+// 직원의 경우 유저 정보에 포함하여 반환
+message Employee {
+  int64 id = 1;
+  int64 user_id = 2;
+  int64 department_id = 3;
+}
+
+// 유저
+message User {
+  int64 id = 1;
+  string user_number = 2;
+  string email = 3;
+  string name = 4;
+  string family_name = 5;
+  string given_name = 6;
+  proto.common.UserType type = 7;
+  proto.common.UserStatus status = 8;
+  string bio = 9;
+  string profile = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp deleted_at = 12;
+
+  // UserType에 따라 최대 하나만 설정
+  oneof user_detail {
+    Student student = 13;
+    Employee employee = 14;
+  }
+}

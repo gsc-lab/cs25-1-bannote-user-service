@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package proto.department;
+
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "com.bannote.userservice.proto.department";
+option java_outer_classname = "DepartmentMessageProto";
+
+// 학과
+message Department {
+  int64 id = 1;
+  string name = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp deleted_at = 4;
+}
