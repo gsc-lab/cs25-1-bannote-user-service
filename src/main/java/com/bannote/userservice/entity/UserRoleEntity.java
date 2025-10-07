@@ -1,11 +1,16 @@
 package com.bannote.userservice.entity;
 
+import com.bannote.userservice.type.UserRole;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "\"user_role\"")
+@Getter
+@Setter
 public class UserRoleEntity {
 
     @Id
@@ -16,9 +21,9 @@ public class UserRoleEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity user;
 
-    @JoinColumn(name = "role_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private RoleEntity role;
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     @Column(name = "created_at")
     private Timestamp createdAt;

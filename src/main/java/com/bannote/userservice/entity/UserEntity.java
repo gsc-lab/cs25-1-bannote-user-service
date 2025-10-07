@@ -1,5 +1,6 @@
 package com.bannote.userservice.entity;
 
+import com.bannote.userservice.type.UserRole;
 import com.bannote.userservice.type.UserStatus;
 import com.bannote.userservice.type.UserType;
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.SQLDelete;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -71,6 +73,16 @@ public class UserEntity {
     @PrePersist
     void createdAt() {
         this.createdAt = Timestamp.from(Instant.now());
+    }
+
+    /**
+     * 가장 높은 권한을 가진 역할 반환
+     */
+    public UserRole getHighestRole() {
+        return roles.stream()
+                .map(UserRoleEntity::getRole)
+                .max(Comparator.comparingInt(UserRole::getLevel))
+                .orElse(null);
     }
 
 }
