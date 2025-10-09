@@ -2,6 +2,8 @@ package com.bannote.userservice.entity;
 
 import com.bannote.userservice.type.StudentClassStatus;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 
 import java.sql.Timestamp;
@@ -11,6 +13,8 @@ import java.time.Year;
 @Entity
 @Table(name = "\"student_class\"")
 @SQLDelete(sql = "UPDATE \"student_class\" SET deleted_at = NOW() where id=?")
+@Getter
+@Setter
 public class StudentClassEntity {
 
     @Id
@@ -23,6 +27,9 @@ public class StudentClassEntity {
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "code")
+    private String code;
 
     @Column(name = "admission_year")
     private Year admissionYear;

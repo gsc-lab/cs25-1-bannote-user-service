@@ -1,8 +1,8 @@
 package com.bannote.userservice.entity;
 
-import com.bannote.userservice.type.UserRole;
-import com.bannote.userservice.type.UserStatus;
-import com.bannote.userservice.type.UserType;
+import com.bannote.userservice.domain.user.field.UserRole;
+import com.bannote.userservice.domain.user.field.UserStatus;
+import com.bannote.userservice.domain.user.field.UserType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,10 +26,10 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_number")
-    private String userNumber;
+    @Column(name = "code", unique = true, nullable = false)
+    private String code;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     @Column(name = "name")
@@ -52,8 +52,8 @@ public class UserEntity {
     @Column(name = "bio")
     private String bio;
 
-    @Column(name = "profile")
-    private String profile;
+    @Column(name = "profile_image")
+    private String profileImage;
 
     @Column(name = "created_at")
     private Timestamp createdAt;

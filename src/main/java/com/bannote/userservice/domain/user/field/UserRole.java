@@ -1,4 +1,4 @@
-package com.bannote.userservice.type;
+package com.bannote.userservice.domain.user.field;
 
 import lombok.Getter;
 

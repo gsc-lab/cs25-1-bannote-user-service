@@ -1,6 +1,6 @@
 package com.bannote.userservice.entity;
 
-import com.bannote.userservice.type.UserRole;
+import com.bannote.userservice.domain.user.field.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
