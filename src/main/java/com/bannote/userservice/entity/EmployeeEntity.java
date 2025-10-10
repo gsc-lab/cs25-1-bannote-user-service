@@ -17,7 +17,18 @@ public class EmployeeEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private DepartmentEntity department;
+
+    public static EmployeeEntity create(
+            UserEntity user,
+            DepartmentEntity department
+    ) {
+        EmployeeEntity employeeEntity = new EmployeeEntity();
+        employeeEntity.user = user;
+        employeeEntity.department = department;
+        return employeeEntity;
+    }
 }
