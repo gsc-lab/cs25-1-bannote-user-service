@@ -22,6 +22,8 @@ public enum UserType {
         return switch (proto) {
             case USER_TYPE_STUDENT -> STUDENT;
             case USER_TYPE_EMPLOYEE -> EMPLOYEE;
+            case USER_TYPE_SERVICE -> SERVICE;
+            case USER_TYPE_OTHER -> OTHER;
             default -> throw new UserServiceException(ErrorCode.INVALID_FORMAT,
                     "Invalid user type: " + proto);
         };
