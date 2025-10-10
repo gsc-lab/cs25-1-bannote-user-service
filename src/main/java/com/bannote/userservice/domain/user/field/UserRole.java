@@ -1,5 +1,7 @@
 package com.bannote.userservice.domain.user.field;
 
+import com.bannote.userservice.exception.ErrorCode;
+import com.bannote.userservice.exception.UserServiceException;
 import lombok.Getter;
 
 // TODO: 서비스가 커지게 될 경우 권한 서비스로 분리 예정
@@ -24,5 +26,29 @@ public enum UserRole {
      */
     public boolean hasAuthority(int requiredLevel) {
         return this.level >= requiredLevel;
+    }
+
+    public static UserRole of(com.bannote.userservice.proto.common.v1.UserRole proto) {
+        return switch (proto) {
+            case USER_ROLE_STUDENT -> STUDENT;
+            case USER_ROLE_DOORKEEPER -> DOORKEEPER;
+            case USER_ROLE_CLASS_REP -> CLASS_REP;
+            case USER_ROLE_TA -> TA;
+            case USER_ROLE_PROFESSOR -> PROFESSOR;
+            case USER_ROLE_ADMIN -> ADMIN;
+            default -> throw new UserServiceException(ErrorCode.INVALID_FORMAT,
+                    "Invalid user role: " + proto);
+        };
+    }
+
+    public com.bannote.userservice.proto.common.v1.UserRole toProto() {
+        return switch (this) {
+            case STUDENT -> com.bannote.userservice.proto.common.v1.UserRole.USER_ROLE_STUDENT;
+            case DOORKEEPER -> com.bannote.userservice.proto.common.v1.UserRole.USER_ROLE_DOORKEEPER;
+            case CLASS_REP -> com.bannote.userservice.proto.common.v1.UserRole.USER_ROLE_CLASS_REP;
+            case TA -> com.bannote.userservice.proto.common.v1.UserRole.USER_ROLE_TA;
+            case PROFESSOR -> com.bannote.userservice.proto.common.v1.UserRole.USER_ROLE_PROFESSOR;
+            case ADMIN -> com.bannote.userservice.proto.common.v1.UserRole.USER_ROLE_ADMIN;
+        };
     }
 }

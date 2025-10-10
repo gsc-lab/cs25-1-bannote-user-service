@@ -22,12 +22,17 @@ public enum UserStatus {
 
     }
 
-    public UserStatus of(String value) {
-        return switch (value.toUpperCase()) {
-            case "STUDENT" -> PENDING;
-            case "EMPLOYEE" -> ACTIVE;
+    public static UserStatus of(com.bannote.userservice.proto.common.v1.UserStatus proto) {
+        return switch (proto) {
+            case USER_STATUS_PENDING -> PENDING;
+            case USER_STATUS_ACTIVE -> ACTIVE;
+            case USER_STATUS_GRADUATED -> GRADUATED;
+            case USER_STATUS_LEAVE -> LEAVE;
+            case USER_STATUS_SUSPENDED -> SUSPENDED;
+            case USER_STATUS_WITHDRAWN -> WITHDRAWN;
+            case USER_STATUS_EXPELLED -> EXPELLED;
             default -> throw new UserServiceException(ErrorCode.INVALID_FORMAT,
-                    "Invalid user type: " + value);
+                    "Invalid user status: " + proto);
         };
     }
 

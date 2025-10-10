@@ -7,7 +7,9 @@ import lombok.Getter;
 @Getter
 public enum UserType {
     STUDENT("학생"),
-    EMPLOYEE("직원")
+    EMPLOYEE("직원"),
+    SERVICE("서비스"),
+    OTHER("기타"),
     ;
 
     private final String description;
@@ -16,12 +18,12 @@ public enum UserType {
         this.description = description;
     }
 
-    public UserType of(String value) {
-        return switch (value.toUpperCase()) {
-            case "STUDENT" -> STUDENT;
-            case "EMPLOYEE" -> EMPLOYEE;
+    public static UserType of(com.bannote.userservice.proto.common.v1.UserType proto) {
+        return switch (proto) {
+            case USER_TYPE_STUDENT -> STUDENT;
+            case USER_TYPE_EMPLOYEE -> EMPLOYEE;
             default -> throw new UserServiceException(ErrorCode.INVALID_FORMAT,
-                    "Invalid user type: " + value);
+                    "Invalid user type: " + proto);
         };
     }
 
@@ -29,6 +31,8 @@ public enum UserType {
         return switch (this) {
             case STUDENT -> com.bannote.userservice.proto.common.v1.UserType.USER_TYPE_STUDENT;
             case EMPLOYEE -> com.bannote.userservice.proto.common.v1.UserType.USER_TYPE_EMPLOYEE;
+            case SERVICE -> com.bannote.userservice.proto.common.v1.UserType.USER_TYPE_SERVICE;
+            case OTHER -> com.bannote.userservice.proto.common.v1.UserType.USER_TYPE_OTHER;
         };
     }
 
