@@ -1,18 +1,15 @@
 syntax = "proto3";
 
-package proto.role;
+package bannote.userservice.role.v1;
 
-import "google/protobuf/timestamp.proto";
 import "common/enums.proto";
 
+option go_package = "github.com/kyumin1227/bannote-proto/gen/go/user-service/role/v1";
 option java_multiple_files = true;
-option java_package = "com.bannote.userservice.proto.role";
-option java_outer_classname = "RoleMessageProto";
+option java_package = "com.bannote.userservice.proto.role.v1";
 
 // 유저-권한 매핑
 message UserRoleMapping {
-  int64 id = 1;
-  int64 user_id = 2;
-  proto.common.UserRole role = 3;
-  google.protobuf.Timestamp created_at = 4;
+  string user_code = 1;
+  bannote.userservice.common.v1.UserRole role = 2;
 }
