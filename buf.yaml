@@ -1,0 +1,9 @@
+version: v2
+deps:
+  - buf.build/bannote/user-service
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - DEFAULT
