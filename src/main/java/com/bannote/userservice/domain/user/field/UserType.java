@@ -45,4 +45,12 @@ public enum UserType {
     public Boolean isEmployee() {
         return this == EMPLOYEE;
     }
+
+    public Boolean isService() {
+        return this == SERVICE;
+    }
+
+    public Boolean isOther() {
+        return this == OTHER;
+    }
 }

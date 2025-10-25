@@ -31,6 +31,21 @@ public class UserEmail {
         }
     }
 
+    /**
+     * 이메일의 도메인 부분을 반환 (@ 뒤의 부분)
+     * 예: "user@example.com" -> "example.com"
+     *
+     * @return 이메일 도메인
+     */
+    public String getDomain() {
+        int atIndex = value.indexOf('@');
+        if (atIndex == -1 || atIndex == value.length() - 1) {
+            throw new UserServiceException(ErrorCode.INVALID_FORMAT,
+                    String.format("UserEmail format is invalid: %s", value));
+        }
+        return value.substring(atIndex + 1);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

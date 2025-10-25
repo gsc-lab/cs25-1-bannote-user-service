@@ -27,9 +27,9 @@ public class StudentClassName {
             throw new UserServiceException(ErrorCode.REQUIRED_FIELD_MISSING, "DepartmentName is required");
         }
 
-        if (value.length() != MAX_LENGTH) {
+        if (value.length() > MAX_LENGTH) {
             throw new UserServiceException(ErrorCode.INVALID_FORMAT,
-                    String.format("DepartmentName cannot be longer than %d characters: %s", MAX_LENGTH, value));
+                    String.format("StudentClassName cannot be longer than %d characters: %s", MAX_LENGTH, value));
         }
     }
 

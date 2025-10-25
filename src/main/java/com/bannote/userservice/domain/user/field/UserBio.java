@@ -23,8 +23,13 @@ public class UserBio {
         return new UserBio(value);
     }
 
+    public static UserBio empty() {
+        return new UserBio("");
+    }
+
     private static void validate(String value) {
-        if (value == null || value.isEmpty()) {
+        // Bio는 빈 문자열 허용
+        if (value == null) {
             throw new UserServiceException(ErrorCode.REQUIRED_FIELD_MISSING, "User Bio cannot be null or empty");
         }
 

@@ -27,7 +27,7 @@ public class DepartmentName {
             throw new UserServiceException(ErrorCode.REQUIRED_FIELD_MISSING, "DepartmentName is required");
         }
 
-        if (value.length() != MXA_LENGTH) {
+        if (value.length() > MXA_LENGTH) {
             throw new UserServiceException(ErrorCode.INVALID_FORMAT,
                     String.format("DepartmentName cannot be longer than %d characters: %s", MXA_LENGTH, value));
         }

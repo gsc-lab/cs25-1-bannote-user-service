@@ -50,10 +50,9 @@ public enum UserStatus {
 
     /**
      * 로그인 가능한 상태인지 확인
-     * @param status 유저 상태
      * @return 로그인 가능 여부
      */
-    public static Boolean LoginAllowed(UserStatus status) {
-        return status == ACTIVE || status == GRADUATED || status == LEAVE;
+    public Boolean loginAllowed() {
+        return this == ACTIVE || this == GRADUATED || this == LEAVE;
     }
 }
