@@ -2,40 +2,47 @@ package com.bannote.userservice.domain.user;
 
 import com.bannote.userservice.domain.department.field.DepartmentCode;
 import com.bannote.userservice.domain.department.field.DepartmentName;
-import com.bannote.userservice.domain.studentclass.field.StudentClassCode;
-import com.bannote.userservice.domain.studentclass.field.StudentClassName;
 import com.bannote.userservice.entity.UserEntity;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.With;
 
-@Builder
 @Getter
 public class Employee {
     private final UserBasic userBasic;
     private final DepartmentCode departmentCode;
-    private final DepartmentName departmentName;
+    @With private final DepartmentName departmentName;
+
+    private Employee(
+            UserBasic userBasic,
+            DepartmentCode departmentCode,
+            DepartmentName departmentName
+    ) {
+        this.userBasic = userBasic;
+        this.departmentCode = departmentCode;
+        this.departmentName = departmentName;
+    }
 
     public static Employee create(
             UserBasic userBasic,
             DepartmentCode departmentCode,
             DepartmentName departmentName
     ) {
-        return Employee.builder()
-                .userBasic(userBasic)
-                .departmentCode(departmentCode)
-                .departmentName(departmentName)
-                .build();
+        return new Employee(
+                userBasic,
+                departmentCode,
+                departmentName
+        );
     }
 
     public static Employee fromEntity(UserEntity userEntity) {
         UserBasic userBasic = UserBasic.fromEntity(userEntity);
         var department = userEntity.getEmployee().getDepartment();
 
-        return Employee.builder()
-                .userBasic(userBasic)
-                .departmentCode(DepartmentCode.of(department.getCode()))
-                .departmentName(DepartmentName.of(department.getName()))
-                .build();
+        return new Employee(
+                userBasic,
+                DepartmentCode.of(department.getCode()),
+                DepartmentName.of(department.getName())
+        );
     }
 
     public com.bannote.userservice.proto.user.v1.Employee toProto() {

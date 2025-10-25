@@ -5,26 +5,51 @@ import com.bannote.userservice.domain.studentclass.field.StudentClassCode;
 import com.bannote.userservice.domain.studentclass.field.StudentClassName;
 import com.bannote.userservice.domain.studentclass.field.StudentClassStatus;
 import com.bannote.userservice.entity.StudentClassEntity;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.With;
 
 import java.sql.Timestamp;
 import java.time.Year;
 
-@Builder
 @Getter
 public class StudentClass {
     private final Long studentClassId;
     private final Department department;
     private final StudentClassCode studentClassCode;
-    private final StudentClassName studentClassName;
-    private final Year admissionYear;
-    private final Year graduationYear;
-    private final StudentClassStatus status;
+    @With private final StudentClassName studentClassName;
+    @With private final Year admissionYear;
+    @With private final Year graduationYear;
+    @With private final StudentClassStatus status;
     private final Timestamp createdAt;
     private final Timestamp deletedAt;
     private final String createdBy;
     private final String deletedBy;
+
+    private StudentClass(
+            Long studentClassId,
+            Department department,
+            StudentClassCode studentClassCode,
+            StudentClassName studentClassName,
+            Year admissionYear,
+            Year graduationYear,
+            StudentClassStatus status,
+            Timestamp createdAt,
+            Timestamp deletedAt,
+            String createdBy,
+            String deletedBy
+    ) {
+        this.studentClassId = studentClassId;
+        this.department = department;
+        this.studentClassCode = studentClassCode;
+        this.studentClassName = studentClassName;
+        this.admissionYear = admissionYear;
+        this.graduationYear = graduationYear;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.deletedAt = deletedAt;
+        this.createdBy = createdBy;
+        this.deletedBy = deletedBy;
+    }
 
     /**
      * 학급 생성시 사용
@@ -38,31 +63,35 @@ public class StudentClass {
             StudentClassStatus status,
             String createdBy
     ) {
-        return StudentClass.builder()
-                .department(department)
-                .studentClassCode(studentClassCode)
-                .studentClassName(studentClassName)
-                .admissionYear(admissionYear)
-                .graduationYear(graduationYear)
-                .status(status)
-                .createdBy(createdBy)
-                .build();
+        return new StudentClass(
+                null,
+                department,
+                studentClassCode,
+                studentClassName,
+                admissionYear,
+                graduationYear,
+                status,
+                null,
+                null,
+                createdBy,
+                null
+        );
     }
 
-    public static StudentClass fromStudentClassEntity(StudentClassEntity entity) {
-        return StudentClass.builder()
-                .studentClassId(entity.getId())
-                .department(Department.fromDepartmentEntity(entity.getDepartment()))
-                .studentClassCode(StudentClassCode.of(entity.getCode()))
-                .studentClassName(StudentClassName.of(entity.getName()))
-                .admissionYear(entity.getAdmissionYear())
-                .graduationYear(entity.getGraduationYear())
-                .status(entity.getStatus())
-                .createdAt(entity.getCreatedAt())
-                .deletedAt(entity.getDeletedAt())
-                .createdBy(entity.getCreatedBy())
-                .deletedBy(entity.getDeletedBy())
-                .build();
+    public static StudentClass fromEntity(StudentClassEntity entity) {
+        return new StudentClass(
+                entity.getId(),
+                Department.fromEntity(entity.getDepartment()),
+                StudentClassCode.of(entity.getCode()),
+                StudentClassName.of(entity.getName()),
+                entity.getAdmissionYear(),
+                entity.getGraduationYear(),
+                entity.getStatus(),
+                entity.getCreatedAt(),
+                entity.getDeletedAt(),
+                entity.getCreatedBy(),
+                entity.getDeletedBy()
+        );
     }
 
     public com.bannote.userservice.proto.student_class.v1.StudentClass toProto() {

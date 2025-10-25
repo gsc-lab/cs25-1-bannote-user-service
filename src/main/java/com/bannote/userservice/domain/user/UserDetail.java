@@ -1,64 +1,122 @@
 package com.bannote.userservice.domain.user;
 
-import com.bannote.userservice.exception.ErrorCode;
-import com.bannote.userservice.exception.UserServiceException;
+import com.bannote.userservice.domain.department.field.DepartmentCode;
+import com.bannote.userservice.domain.department.field.DepartmentName;
+import com.bannote.userservice.domain.studentclass.field.StudentClassCode;
+import com.bannote.userservice.domain.studentclass.field.StudentClassName;
 import lombok.Getter;
 
 @Getter
 public class UserDetail {
 
     private final UserBasic userBasic;
-    private final Student student;
-    private final Employee employee;
 
-    private UserDetail(UserBasic userBasic, Student student, Employee employee) {
-        int count = (userBasic != null ? 1 : 0)
-                + (student != null ? 1 : 0)
-                + (employee != null ? 1 : 0);
+    private final StudentClassCode studentClassCode;
+    private final StudentClassName studentClassName;
 
-        if (count != 1) {
-            throw new UserServiceException(ErrorCode.INVALID_ARGUMENT,
-                String.format("Exactly one user detail must be provided: UserBasic, Student, or Employee: %d provided", count));
-        }
+    private final DepartmentCode departmentCode;
+    private final DepartmentName departmentName;
 
+    private UserDetail(
+            UserBasic userBasic,
+            StudentClassCode studentClassCode,
+            StudentClassName studentClassName,
+            DepartmentCode departmentCode,
+            DepartmentName departmentName
+    ) {
         this.userBasic = userBasic;
-        this.student = student;
-        this.employee = employee;
+        this.studentClassCode = studentClassCode;
+        this.studentClassName = studentClassName;
+        this.departmentCode = departmentCode;
+        this.departmentName = departmentName;
     }
 
-    public static UserDetail ofBasic(UserBasic userBasic) {
-        return new UserDetail(userBasic, null, null);
+    public static UserDetail ofBasic(
+            UserBasic userBasic
+    ) {
+        return new UserDetail(
+                userBasic,
+                null,
+                null,
+                null,
+                null
+        );
     }
 
-    public static UserDetail ofStudent(Student student) {
-        return new UserDetail(null, student, null);
+    public static UserDetail ofStudent(
+            Student student
+    ) {
+        return new UserDetail(
+                student.getUserBasic(),
+                student.getStudentClassCode(),
+                student.getStudentClassName(),
+                student.getDepartmentCode(),
+                student.getDepartmentName()
+        );
     }
 
-    public static UserDetail ofEmployee(Employee employee) {
-        return new UserDetail(null, null, employee);
+    public static UserDetail ofEmployee(
+            Employee employee
+    ) {
+        return new UserDetail(
+                employee.getUserBasic(),
+                null,
+                null,
+                employee.getDepartmentCode(),
+                employee.getDepartmentName()
+        );
     }
 
     public boolean isStudent() {
-        return student != null;
+        return userBasic.getUserType().isStudent();
     }
 
     public boolean isEmployee() {
-        return employee != null;
+        return userBasic.getUserType().isEmployee();
     }
 
-    public boolean isBasic() {
-        return userBasic != null;
+    public boolean isService() {
+        return userBasic.getUserType().isService();
+    }
+
+    public boolean isOther() {
+        return userBasic.getUserType().isOther();
+    }
+
+    public boolean isLoginAllowed() {
+        return userBasic.getUserStatus().loginAllowed();
     }
 
     public com.bannote.userservice.proto.user.v1.UserDetail toProto() {
         var builder = com.bannote.userservice.proto.user.v1.UserDetail.newBuilder();
 
-        if (this.userBasic != null) {
-            builder.setUser(this.userBasic.toProto());
-        } else if (this.student != null) {
-            builder.setStudent(this.student.toProto());
-        } else if (this.employee != null) {
-            builder.setEmployee(this.employee.toProto());
+        builder.setUserCode(this.userBasic.getUserCode().getValue());
+        builder.setUserEmail(this.userBasic.getUserEmail().getValue());
+        builder.setFamilyName(this.userBasic.getUserFamilyName().getValue());
+        builder.setGivenName(this.userBasic.getUserGivenName().getValue());
+        builder.setUserType(this.userBasic.getUserType().toProto());
+        builder.setUserStatus(this.userBasic.getUserStatus().toProto());
+        builder.setBio(this.userBasic.getUserBio() != null ? this.userBasic.getUserBio().getValue() : "");
+        builder.setProfileImageUrl(this.userBasic.getUserProfileImage().getValue());
+
+        if (this.userBasic.getCreatedAt() != null) {
+            builder.setCreatedAt(com.google.protobuf.util.Timestamps.fromMillis(this.userBasic.getCreatedAt().getTime()));
+        }
+
+        if (this.userBasic.getDeletedAt() != null) {
+            builder.setDeletedAt(com.google.protobuf.util.Timestamps.fromMillis(this.userBasic.getDeletedAt().getTime()));
+        }
+
+        if (isStudent()) {
+            builder.setStudentClassCode(this.studentClassCode.getValue());
+            builder.setStudentClassName(this.studentClassName.getValue());
+            builder.setDepartmentCode(this.departmentCode.getValue());
+            builder.setDepartmentName(this.departmentName.getValue());
+        }
+
+        if (isEmployee()) {
+            builder.setDepartmentCode(this.departmentCode.getValue());
+            builder.setDepartmentName(this.departmentName.getValue());
         }
 
         return builder.build();

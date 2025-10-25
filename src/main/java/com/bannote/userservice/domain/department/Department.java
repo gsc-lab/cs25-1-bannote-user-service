@@ -3,38 +3,54 @@ package com.bannote.userservice.domain.department;
 import com.bannote.userservice.domain.department.field.DepartmentCode;
 import com.bannote.userservice.domain.department.field.DepartmentName;
 import com.bannote.userservice.entity.DepartmentEntity;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.With;
 
 import java.sql.Timestamp;
 
-@Builder
 @Getter
 public class Department {
     private final Long departmentId;
     private final DepartmentCode departmentCode;
-    private final DepartmentName departmentName;
+    @With private final DepartmentName departmentName;
     private final Timestamp createdAt;
     private final Timestamp deletedAt;
+
+    private Department(
+            Long departmentId,
+            DepartmentCode departmentCode,
+            DepartmentName departmentName,
+            Timestamp createdAt,
+            Timestamp deletedAt
+    ) {
+        this.departmentId = departmentId;
+        this.departmentCode = departmentCode;
+        this.departmentName = departmentName;
+        this.createdAt = createdAt;
+        this.deletedAt = deletedAt;
+    }
 
     public static Department create(
             DepartmentCode departmentCode,
             DepartmentName departmentName
     ) {
-        return Department.builder()
-                .departmentCode(departmentCode)
-                .departmentName(departmentName)
-                .build();
+        return new Department(
+                null,
+                departmentCode,
+                departmentName,
+                null,
+                null
+        );
     }
 
-    public static Department fromDepartmentEntity(DepartmentEntity entity) {
-        return Department.builder()
-                .departmentId(entity.getId())
-                .departmentCode(DepartmentCode.of(entity.getCode()))
-                .departmentName(DepartmentName.of(entity.getName()))
-                .createdAt(entity.getCreatedAt())
-                .deletedAt(entity.getDeletedAt())
-                .build();
+    public static Department fromEntity(DepartmentEntity entity) {
+        return new Department(
+                entity.getId(),
+                DepartmentCode.of(entity.getCode()),
+                DepartmentName.of(entity.getName()),
+                entity.getCreatedAt(),
+                entity.getDeletedAt()
+        );
     }
 
     public com.bannote.userservice.proto.department.v1.Department toProto() {
