@@ -6,25 +6,24 @@ import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 public class StudentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "user_id")
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department_id", nullable = false)
     private DepartmentEntity department;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_class_id")
+    @JoinColumn(name = "student_class_id", nullable = false)
     private StudentClassEntity studentClass;
 
     public static StudentEntity create(
@@ -33,6 +32,7 @@ public class StudentEntity {
     ) {
         StudentEntity studentEntity = new StudentEntity();
         studentEntity.user = user;
+        studentEntity.department = studentClass.getDepartment();
         studentEntity.studentClass = studentClass;
         return studentEntity;
     }

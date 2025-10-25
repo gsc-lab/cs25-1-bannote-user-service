@@ -1,5 +1,6 @@
 package com.bannote.userservice.entity;
 
+import com.bannote.userservice.domain.user.field.UserBio;
 import com.bannote.userservice.domain.user.field.UserStatus;
 import com.bannote.userservice.domain.user.field.UserType;
 import jakarta.persistence.*;
@@ -44,12 +45,12 @@ public class UserEntity {
     private String givenName;
 
     @Setter
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserType type;
 
     @Setter
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
@@ -67,9 +68,11 @@ public class UserEntity {
     @Column(name = "deleted_at")
     private Timestamp deletedAt;
 
+    @Setter
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private StudentEntity student;
 
+    @Setter
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private EmployeeEntity employee;
 
@@ -89,6 +92,7 @@ public class UserEntity {
             String givenName,
             UserType type,
             UserStatus status,
+            String bio,
             String profileImage
     ) {
         UserEntity user = new UserEntity();
@@ -99,6 +103,7 @@ public class UserEntity {
         user.givenName = givenName;
         user.type = type;
         user.status = status;
+        user.bio = bio;
         user.profileImage = profileImage;
         return user;
     }

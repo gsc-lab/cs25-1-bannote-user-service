@@ -28,20 +28,20 @@ public class StudentClassEntity {
     private String code;
 
     @Setter
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Setter
-    @Column(name = "admission_year")
+    @Column(name = "admission_year", nullable = false)
     private Year admissionYear;
 
     @Setter
-    @Column(name = "graduation_year")
+    @Column(name = "graduation_year", nullable = false)
     private Year graduationYear;
 
     @Setter
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private StudentClassStatus status;
 
     @Column(name = "created_at")

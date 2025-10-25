@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.sql.Timestamp;
 import java.time.Instant;
 
+// TODO email은 뜻이 상충하기에 AllowedDomain 으로 변경 필요
 @Entity
 public class AllowedEmailEntity {
 
