@@ -1,0 +1,14 @@
+version: v2
+inputs:
+  - module: buf.build/bannote/user-service
+managed:
+  enabled: true
+  override:
+    - file_option: java_package_prefix
+      value: com.bannote.userservice.grpc
+plugins:
+  # Java plugins
+  - remote: buf.build/protocolbuffers/java
+    out: src/main/java
+  - remote: buf.build/grpc/java
+    out: src/main/java

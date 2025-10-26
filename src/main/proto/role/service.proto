@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-package proto.role;
+package bannote.userservice.role.v1;
 
 import "role/role.proto";
 import "common/enums.proto";
 
+option go_package = "github.com/kyumin1227/bannote-proto/gen/go/user-service/role/v1";
 option java_multiple_files = true;
-option java_package = "com.bannote.userservice.proto.role";
-option java_outer_classname = "RoleServiceProto";
+option java_package = "com.bannote.userservice.proto.role.v1";
 
 // Gateway에서 gRPC metadata로 전달되는 정보:
 // - user-id: 요청하는 유저의 ID
@@ -17,11 +17,11 @@ option java_outer_classname = "RoleServiceProto";
 service RoleService {
 
 //  유저에게 권한 부여 API
-  rpc AssignRoleToUser (AssignRoleToUserRequest) returns (UserRoleMapping) {
+  rpc AssignRoleToUser (AssignRoleToUserRequest) returns (AssignRoleToUserResponse) {
   }
 
 //  유저에게서 권한 제거 API
-  rpc RemoveRoleFromUser (RemoveRoleFromUserRequest) returns (UserRoleMapping) {
+  rpc RemoveRoleFromUser (RemoveRoleFromUserRequest) returns (RemoveRoleFromUserResponse) {
   }
 
 //  유저의 권한 목록 조회 API
@@ -35,29 +35,37 @@ service RoleService {
 
 // 유저에게 권한 부여 시 필요한 정보
 message AssignRoleToUserRequest {
-  int64 user_id = 1;
-  proto.common.UserRole role = 2;
+  string user_code = 1;
+  bannote.userservice.common.v1.UserRole role = 2;
+}
+
+message AssignRoleToUserResponse {
+  UserRoleMapping user_role_mapping = 1;
 }
 
 // 유저에게서 권한 제거 시 필요한 정보
 message RemoveRoleFromUserRequest {
-  int64 user_id = 1;
-  proto.common.UserRole role = 2;
+  string user_code = 1;
+  bannote.userservice.common.v1.UserRole role = 2;
+}
+
+message RemoveRoleFromUserResponse {
+  UserRoleMapping user_role_mapping = 1;
 }
 
 // 유저의 권한 목록 조회 시 필요한 정보
 message ListUserRolesRequest {
-  int64 user_id = 1;
+  string user_code = 1;
 }
 
 // 유저의 권한 목록 조회 응답
 message ListUserRolesResponse {
-  repeated proto.common.UserRole roles = 1;
+  repeated bannote.userservice.common.v1.UserRole roles = 1;
 }
 
 // 유저 권한 레벨 확인 요청
 message CheckUserHasAuthorityRequest {
-  int64 user_id = 1;
+  string user_code = 1;
   int32 required_level = 2;  // 30이면 반대표(30) 이상 권한 필요
 }
 
