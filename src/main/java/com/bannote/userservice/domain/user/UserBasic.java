@@ -51,7 +51,7 @@ public class UserBasic {
     }
 
     public String getUserName() {
-         return String.format(this.userFamilyName.getValue() + " " + this.userGivenName.getValue());
+         return String.format("%s %s", this.userFamilyName.getValue(), this.userGivenName.getValue());
     }
 
     /**
@@ -109,7 +109,7 @@ public class UserBasic {
                 .setStatus(this.userStatus.toProto())
                 .setBio(this.userBio.getValue())
                 .setProfileImageUrl(this.userProfileImage.getValue())
-                .setCreatedAt(this.createdAt != null ? com.google.protobuf.util.Timestamps.fromMillis(this.createdAt.getTime()) : null);
+                .setCreatedAt(com.google.protobuf.util.Timestamps.fromMillis(this.createdAt.getTime()));
 
         if (this.deletedAt != null) {
             builder.setDeletedAt(com.google.protobuf.util.Timestamps.fromMillis(this.deletedAt.getTime()));

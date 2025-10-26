@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class DepartmentName {
 
-    private static final int MXA_LENGTH = 20;  // 학과 이름 최대 길이
+    private static final int MAX_LENGTH = 20;  // 학과 이름 최대 길이
 
     @Getter
     private final String value;
@@ -27,9 +27,9 @@ public class DepartmentName {
             throw new UserServiceException(ErrorCode.REQUIRED_FIELD_MISSING, "DepartmentName is required");
         }
 
-        if (value.length() > MXA_LENGTH) {
+        if (value.length() > MAX_LENGTH) {
             throw new UserServiceException(ErrorCode.INVALID_FORMAT,
-                    String.format("DepartmentName cannot be longer than %d characters: %s", MXA_LENGTH, value));
+                    String.format("DepartmentName cannot be longer than %d characters: %s", MAX_LENGTH, value));
         }
     }
 

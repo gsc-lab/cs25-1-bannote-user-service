@@ -9,15 +9,15 @@ import lombok.Getter;
 public enum ErrorCode {
 
     // User related errors
-    USER_NOT_FOUND(Status.NOT_FOUND, "User not founded"),
+    USER_NOT_FOUND(Status.NOT_FOUND, "User not found"),
     DUPLICATE_EMAIL(Status.ALREADY_EXISTS, "Email already exists"),
     DUPLICATE_USER_CODE(Status.ALREADY_EXISTS, "User Code already exists"),
 
     // Department related errors
-    DEPARTMENT_NOT_FOUND(Status.NOT_FOUND, "Department not founded"),
+    DEPARTMENT_NOT_FOUND(Status.NOT_FOUND, "Department not found"),
 
     // Student class related errors
-    STUDENT_CLASS_NOT_FOUND(Status.NOT_FOUND, "Student class not founded"),
+    STUDENT_CLASS_NOT_FOUND(Status.NOT_FOUND, "Student class not found"),
     STUDENT_CLASS_DEPARTMENT_MISMATCH(Status.INVALID_ARGUMENT, "Student class does not belong to the specified department"),
 
     // Validation errors

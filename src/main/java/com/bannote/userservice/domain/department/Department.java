@@ -58,7 +58,7 @@ public class Department {
         return com.bannote.userservice.proto.department.v1.Department.newBuilder()
                 .setDepartmentCode(this.departmentCode.getValue())
                 .setName(this.departmentName.getValue())
-                .setCreatedAt(this.createdAt != null ? com.google.protobuf.util.Timestamps.fromMillis(this.createdAt.getTime()) : null)
+                .setCreatedAt(com.google.protobuf.util.Timestamps.fromMillis(this.createdAt.getTime()))
                 .build();
     }
 }

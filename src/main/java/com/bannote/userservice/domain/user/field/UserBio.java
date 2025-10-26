@@ -6,7 +6,6 @@ import lombok.Getter;
 
 import java.util.Objects;
 
-@Getter
 public class UserBio {
 
     private static final int MAX_LENGTH = 300;

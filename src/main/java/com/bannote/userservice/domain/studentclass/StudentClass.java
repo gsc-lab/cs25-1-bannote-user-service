@@ -103,7 +103,7 @@ public class StudentClass {
                 .setAdmissionYear(this.admissionYear.getValue())
                 .setGraduationYear(this.graduationYear.getValue())
                 .setStatus(this.status.toProto())
-                .setCreatedAt(this.createdAt != null ? com.google.protobuf.util.Timestamps.fromMillis(this.createdAt.getTime()) : null)
+                .setCreatedAt(com.google.protobuf.util.Timestamps.fromMillis(this.createdAt.getTime()))
                 .build();
     }
 }
