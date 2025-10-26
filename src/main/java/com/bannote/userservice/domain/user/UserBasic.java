@@ -10,6 +10,8 @@ import java.sql.Timestamp;
 @Getter
 public class UserBasic {
 
+    // TODO: 유저 권한 관련 필드 추가 필요
+
     private final Long userId;
     private final UserCode userCode;
     private final UserEmail userEmail;
