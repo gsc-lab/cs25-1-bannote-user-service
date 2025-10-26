@@ -15,6 +15,8 @@ public enum ErrorCode {
 
     // Department related errors
     DEPARTMENT_NOT_FOUND(Status.NOT_FOUND, "Department not found"),
+    DUPLICATE_DEPARTMENT_CODE(Status.ALREADY_EXISTS, "Department Code already exists"),
+    DUPLICATE_DEPARTMENT_NAME(Status.ALREADY_EXISTS, "Department Name already exists"),
 
     // Student class related errors
     STUDENT_CLASS_NOT_FOUND(Status.NOT_FOUND, "Student class not found"),

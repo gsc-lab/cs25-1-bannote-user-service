@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface DepartmentEntityRepository extends JpaRepository<DepartmentEntity, Long> {
 
     Optional<DepartmentEntity> findByCode(String code);
+    Boolean existsByCode(String code);
+    Boolean existsByName(String name);
 }

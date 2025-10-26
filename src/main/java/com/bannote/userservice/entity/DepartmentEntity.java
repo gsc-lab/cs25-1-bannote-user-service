@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -12,10 +14,12 @@ import java.time.Instant;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "\"department\"", indexes = {
+@DynamicUpdate
+@SQLRestriction("deleted_at IS NULL")
+@Table(name = "department", indexes = {
         @Index(name = "idx_departmententity_name_unq", columnList = "name", unique = true)
 })
-@SQLDelete(sql = "UPDATE \"department\" SET deleted_at = NOW() where id = ?")
+@SQLDelete(sql = "UPDATE department SET deleted_at = NOW() WHERE id = ?")
 public class DepartmentEntity {
 
     @Id
@@ -26,7 +30,7 @@ public class DepartmentEntity {
     private String code;
 
     @Setter
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
     @Column(name = "created_at")
