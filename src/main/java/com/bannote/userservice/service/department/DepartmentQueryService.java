@@ -32,7 +32,7 @@ public class DepartmentQueryService {
      */
     public DepartmentEntity getDepartmentEntityByCode(String code) throws UserServiceException {
 
-        DepartmentCode.of(code);
+        DepartmentCode.validate(code);
 
         return departmentEntityRepository.findByCode(code)
                 .orElseThrow(() -> new UserServiceException(
@@ -49,7 +49,7 @@ public class DepartmentQueryService {
      */
     public Department getDepartmentByCode(String code) {
 
-        DepartmentCode.of(code);
+        DepartmentCode.validate(code);
 
         return Department.fromEntity(departmentEntityRepository.findByCode(code)
                 .orElseThrow(() -> new UserServiceException(

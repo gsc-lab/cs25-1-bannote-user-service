@@ -117,7 +117,7 @@ public class DepartmentGrpcService extends DepartmentServiceGrpc.DepartmentServi
                     .addAllDepartments(departmentPage.getContent().stream()
                             .map(Department::toProto)
                             .collect(Collectors.toList()))
-                    .setTotalCount((int) departmentPage.getTotalElements())
+                    .setTotalCount(Math.toIntExact(departmentPage.getTotalElements()))
                     .setPage(request.getPage())
                     .setSize(request.getSize())
                     .build();

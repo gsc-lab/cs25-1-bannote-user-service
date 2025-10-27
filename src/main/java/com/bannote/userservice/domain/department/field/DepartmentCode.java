@@ -22,7 +22,7 @@ public class DepartmentCode {
         return new DepartmentCode(value);
     }
 
-    private static void validate(String value) {
+    public static void validate(String value) {
         if (value == null || value.isEmpty()) {
             throw new UserServiceException(ErrorCode.REQUIRED_FIELD_MISSING, "DepartmentCode is required");
         }
