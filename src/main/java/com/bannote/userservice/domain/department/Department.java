@@ -43,6 +43,19 @@ public class Department {
         );
     }
 
+    public static Department update(
+            DepartmentCode departmentCode,
+            DepartmentName departmentName
+    ) {
+        return new Department(
+                null,
+                departmentCode,
+                departmentName,
+                null,
+                null
+        );
+    }
+
     public static Department fromEntity(DepartmentEntity entity) {
         return new Department(
                 entity.getId(),

@@ -17,11 +17,11 @@ public class UserServiceException extends RuntimeException {
 
   @Override
   public String getMessage() {
-    if (message == null) {
-      return errorCode.getMessage();
+    if (message != null) {
+      return message;
     }
 
-    return String.format("%s. %s", errorCode.getMessage(), message);
+    return errorCode.getMessage();
   }
 
 }
