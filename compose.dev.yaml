@@ -1,0 +1,23 @@
+# 로컬 개발용: MySQL만 실행, 앱은 IDE에서 실행
+services:
+  mysql:
+    image: 'mysql:9.0'
+    container_name: user-service-mysql-dev
+    environment:
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: verysecret
+    ports:
+      - '3307:3306'
+    volumes:
+      - user-service-dev:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pverysecret"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  user-service-dev:
+    driver: local
