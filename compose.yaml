@@ -1,10 +1,44 @@
 services:
   mysql:
-    image: 'mysql:latest'
+    image: 'mysql:9.0'
+    container_name: user-service-mysql
     environment:
-      - 'MYSQL_DATABASE=mydatabase'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: verysecret
     ports:
       - '3306:3306'
+    volumes:
+      - user-service:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pverysecret"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - user-service-network
+
+  app:
+    image: 'user-service:test'
+    container_name: user-service-app
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/mydatabase
+      DB_USERNAME: myuser
+      DB_PASSWORD: secret
+      GRPC_PORT: 9090
+    ports:
+      - '9090:9090'
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - user-service-network
+
+volumes:
+  user-service:
+    driver: local
+
+networks:
+  user-service-network:
+    driver: bridge

@@ -1,10 +1,15 @@
 spring:
   application:
     name: User-Service
+  docker:
+    compose:
+      enabled: true
+      file: compose.dev.yaml
+      lifecycle-management: start_only
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:3307/mydatabase
+    username: myuser
+    password: secret
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
