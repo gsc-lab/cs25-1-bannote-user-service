@@ -28,6 +28,10 @@ public enum ErrorCode {
     INVALID_ARGUMENT(Status.INVALID_ARGUMENT, "Invalid argument"),
     INVALID_STATE(Status.INTERNAL, "Invalid state"),
 
+    // Authentication & Authorization errors
+    UNAUTHORIZED(Status.UNAUTHENTICATED, "Authentication is required"),
+    FORBIDDEN(Status.PERMISSION_DENIED, "Insufficient permissions"),
+
     ENTITY_TO_DOMAIN_CONVERSION_FAILED(Status.INTERNAL, "Failed to convert entity to domain"),
     ;
 
