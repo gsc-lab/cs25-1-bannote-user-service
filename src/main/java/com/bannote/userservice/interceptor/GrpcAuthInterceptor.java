@@ -35,6 +35,19 @@ public class GrpcAuthInterceptor implements ServerInterceptor {
             Metadata headers,
             ServerCallHandler<ReqT, RespT> next) {
 
+        // 서비스 이름 확인
+        String fullMethodName = call.getMethodDescriptor().getFullMethodName();
+        log.debug("Processing gRPC call: {}", fullMethodName);
+        System.out.println("Processing gRPC call " + fullMethodName);
+
+        // UserService와 Health 서비스는 인증 제외
+        if (fullMethodName.endsWith("UserService/UserLogin") ||
+            fullMethodName.endsWith("UserService/CreateUser") ||
+            fullMethodName.startsWith("grpc.health.v1.Health/")) {
+            log.debug("Skipping authentication for: {}", fullMethodName);
+            return next.startCall(call, headers);
+        }
+
         try {
             // 메타데이터에서 사용자 정보 추출
             String userCodeValue = headers.get(USER_CODE_KEY);
