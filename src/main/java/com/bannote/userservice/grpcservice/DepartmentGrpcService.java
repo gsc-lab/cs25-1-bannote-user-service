@@ -1,5 +1,6 @@
 package com.bannote.userservice.grpcservice;
 
+import com.bannote.userservice.context.AuthorizationUtil;
 import com.bannote.userservice.domain.department.Department;
 import com.bannote.userservice.exception.UserServiceException;
 import com.bannote.userservice.proto.department.v1.*;
@@ -17,10 +18,10 @@ public class DepartmentGrpcService extends DepartmentServiceGrpc.DepartmentServi
 
     private final DepartmentApplicationService departmentApplicationService;
 
-    // TODO: 메타데이터로 유저 정보 받아오기
-
     @Override
     public void createDepartment(CreateDepartmentRequest request, StreamObserver<CreateDepartmentResponse> responseObserver) {
+
+        AuthorizationUtil.requireTA();
 
         try {
             Department department = departmentApplicationService.createDepartment(request);
@@ -67,6 +68,8 @@ public class DepartmentGrpcService extends DepartmentServiceGrpc.DepartmentServi
     @Override
     public void updateDepartment(UpdateDepartmentRequest request, StreamObserver<UpdateDepartmentResponse> responseObserver) {
 
+        AuthorizationUtil.requireTA();
+
         try {
             Department department = departmentApplicationService.updateDepartment(request);
 
@@ -88,6 +91,8 @@ public class DepartmentGrpcService extends DepartmentServiceGrpc.DepartmentServi
 
     @Override
     public void deleteDepartment(DeleteDepartmentRequest request, StreamObserver<DeleteDepartmentResponse> responseObserver) {
+
+        AuthorizationUtil.requireProfessor();
 
         try {
             Department department = departmentApplicationService.deleteDepartment(request);
