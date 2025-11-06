@@ -1,5 +1,6 @@
 package com.bannote.userservice.service.department;
 
+import com.bannote.userservice.context.AuthorizationUtil;
 import com.bannote.userservice.domain.department.Department;
 import com.bannote.userservice.domain.department.field.DepartmentCode;
 import com.bannote.userservice.domain.department.field.DepartmentName;
@@ -32,7 +33,7 @@ public class DepartmentCommandService {
         DepartmentEntity departmentEntity = DepartmentEntity.create(
                 department.getDepartmentCode().getValue(),
                 department.getDepartmentName().getValue(),
-                "temp" // TODO: 쓰레드 context를 이용하여 가져올 예정
+                AuthorizationUtil.getCurrentAuthInfo().userCode().getValue()
         );
 
         DepartmentEntity saved = departmentEntityRepository.save(departmentEntity);
