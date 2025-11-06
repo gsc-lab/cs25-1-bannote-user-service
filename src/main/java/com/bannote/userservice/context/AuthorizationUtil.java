@@ -31,27 +31,21 @@ public class AuthorizationUtil {
     }
 
     /**
-     * 특정 권한 레벨 이상인지 확인
-     * 권한이 부족한 경우 예외 발생
-     */
-    public static void requireAuthority(int requiredLevel) {
-        AuthInfo authInfo = getCurrentAuthInfo();
-        if (!authInfo.hasAuthority(requiredLevel)) {
-            log.warn("Access denied - Required level: {}, User roles: {}",
-                requiredLevel, authInfo.userRoles().getRoles());
-            throw new UserServiceException(
-                ErrorCode.FORBIDDEN,
-                String.format("Requires authority level %d or higher", requiredLevel)
-            );
-        }
-    }
-
-    /**
-     * 특정 권한 이상인지 확인
-     * 권한이 부족한 경우 예외 발생
+     * 현재 인증된 사용자가 특정 권한을 이상인지 확인
+     * @param requiredRole 필요한 권한
      */
     public static void requireAuthority(UserRole requiredRole) {
-        requireAuthority(requiredRole.getLevel());
+        AuthInfo authInfo = getCurrentAuthInfo();
+        if (!authInfo.hasAuthority(requiredRole)) {
+            log.warn("Access denied - User {} tried to access {}'s resource without sufficient authority",
+                    authInfo.userCode().getValue(), requiredRole);
+            throw new UserServiceException(
+                    ErrorCode.FORBIDDEN,
+                    String.format("Required role: %s, but current roles: %s",
+                            requiredRole,
+                            authInfo.getRolesToString())
+            );
+        }
     }
 
     /**
@@ -73,6 +67,20 @@ public class AuthorizationUtil {
      */
     public static void requireTA() {
         requireAuthority(UserRole.TA);
+    }
+
+    /**
+     * CLASS_REP 이상 권한 확인
+     */
+    public static void requireClassRep() {
+        requireAuthority(UserRole.CLASS_REP);
+    }
+
+    /**
+     * DOORKEEPER 이상 권한 확인
+     */
+    public static void requireDoorkeeper() {
+        requireAuthority(UserRole.DOORKEEPER);
     }
 
     /**
@@ -108,8 +116,10 @@ public class AuthorizationUtil {
             log.warn("Access denied - User {} tried to access {}'s resource without sufficient authority",
                 authInfo.userCode().getValue(), targetUserCode);
             throw new UserServiceException(
-                ErrorCode.FORBIDDEN,
-                String.format("Requires %s authority or being the resource owner", requiredRole)
+                    ErrorCode.FORBIDDEN,
+                    String.format("Requires %s authority or being the resource owner, but current roles: %s",
+                            requiredRole,
+                            authInfo.getRolesToString())
             );
         }
     }
