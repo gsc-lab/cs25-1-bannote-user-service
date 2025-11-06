@@ -8,17 +8,19 @@ import lombok.Getter;
 
 @Getter
 public enum UserRole {
-    STUDENT(10),        // 학생
-    DOORKEEPER(20),     // 키지기
-    CLASS_REP(30),      // 반대표
-    TA(40),             // 조교
-    PROFESSOR(50),      // 교수
-    ADMIN(60);          // 관리자
+    STUDENT(10, "Student"),                    // 학생
+    DOORKEEPER(20, "Doorkeeper"),              // 키지기
+    CLASS_REP(30, "Class Representative"),     // 반대표
+    TA(40, "Teaching Assistant"),              // 조교
+    PROFESSOR(50, "Professor"),                // 교수
+    ADMIN(60, "Admin");                        // 관리자
 
     private final int level;
+    private final String name;
 
-    UserRole(int level) {
+    UserRole(int level, String name) {
         this.level = level;
+        this.name = name;
     }
 
     /**
@@ -26,6 +28,10 @@ public enum UserRole {
      */
     public boolean hasAuthority(int requiredLevel) {
         return this.level >= requiredLevel;
+    }
+
+    public String toString() {
+        return this.name;
     }
 
     public static UserRole of(com.bannote.userservice.proto.common.v1.UserRole proto) {

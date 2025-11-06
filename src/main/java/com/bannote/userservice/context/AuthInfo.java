@@ -26,4 +26,11 @@ public record AuthInfo(
     public boolean hasAuthority(UserRole requiredRole) {
         return userRoles.hasAuthority(requiredRole.getLevel());
     }
+
+    /**
+     * 현재 가진 권한 문자열로 반환
+     */
+    public String getRolesToString() {
+        return this.userRoles.toString();
+    }
 }

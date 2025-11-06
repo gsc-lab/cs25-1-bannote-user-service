@@ -22,4 +22,12 @@ public class UserRoles {
     public List<UserRole> getRoles() {
         return userRoles;
     }
+
+    @Override
+    public String toString() {
+        return userRoles.stream()
+                .map(UserRole::toString)
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("No roles");
+    }
 }
