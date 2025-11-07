@@ -47,6 +47,7 @@ public class StudentClassEntity {
     @Column(name = "created_at")
     private Timestamp createdAt;
 
+    @Setter
     @Column(name = "deleted_at")
     private Timestamp deletedAt;
 

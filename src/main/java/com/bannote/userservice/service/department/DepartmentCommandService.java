@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -49,7 +51,9 @@ public class DepartmentCommandService {
      */
     public Department updateDepartment(Department department) {
 
-        DepartmentEntity departmentEntity = departmentQueryService.getDepartmentEntityByCode(department.getDepartmentCode().getValue());
+        DepartmentEntity departmentEntity = departmentQueryService.getDepartmentEntityByCode(
+                department.getDepartmentCode().getValue()
+        );
 
         // 이름 수정
         if (department.getDepartmentName() != null) {
@@ -66,9 +70,12 @@ public class DepartmentCommandService {
      * @return 삭제된 학과 도메인 객체
      */
     public Department deleteDepartment(DepartmentCode code) {
-        DepartmentEntity departmentEntity = departmentQueryService.getDepartmentEntityByCode(code.getValue());
+        DepartmentEntity departmentEntity = departmentQueryService.getDepartmentEntityByCode(
+                code.getValue()
+        );
 
-        departmentEntityRepository.delete(departmentEntity);
+        departmentEntity.setDeletedBy(AuthorizationUtil.getCurrentAuthInfo().userCode().getValue());
+        departmentEntity.setDeletedAt(Timestamp.from(java.time.Instant.now()));
 
         return Department.fromEntity(departmentEntity);
     }
