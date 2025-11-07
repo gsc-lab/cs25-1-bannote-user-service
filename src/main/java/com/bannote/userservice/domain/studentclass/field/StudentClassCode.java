@@ -22,7 +22,7 @@ public class StudentClassCode {
         return new StudentClassCode(value);
     }
 
-    private static void validate(String value) {
+    public static void validate(String value) {
         if (value == null || value.isEmpty()) {
             throw new UserServiceException(ErrorCode.REQUIRED_FIELD_MISSING, "StudentClassCode is required");
         }

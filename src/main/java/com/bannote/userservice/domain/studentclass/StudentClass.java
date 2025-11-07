@@ -5,6 +5,8 @@ import com.bannote.userservice.domain.studentclass.field.StudentClassCode;
 import com.bannote.userservice.domain.studentclass.field.StudentClassName;
 import com.bannote.userservice.domain.studentclass.field.StudentClassStatus;
 import com.bannote.userservice.entity.StudentClassEntity;
+import com.bannote.userservice.exception.ErrorCode;
+import com.bannote.userservice.exception.UserServiceException;
 import lombok.Getter;
 import lombok.With;
 
@@ -49,6 +51,8 @@ public class StudentClass {
         this.deletedAt = deletedAt;
         this.createdBy = createdBy;
         this.deletedBy = deletedBy;
+
+        validate();
     }
 
     /**
@@ -76,6 +80,18 @@ public class StudentClass {
                 createdBy,
                 null
         );
+    }
+
+    private void validate() {
+        if (admissionYear != null && graduationYear != null) {
+            if (admissionYear.isAfter(graduationYear) || admissionYear.equals(graduationYear)) {
+                throw new UserServiceException(
+                        ErrorCode.INVALID_ARGUMENT,
+                        String.format("Admission year (%d) must be before graduation year (%d)",
+                                admissionYear.getValue(), graduationYear.getValue())
+                );
+            }
+        }
     }
 
     public static StudentClass fromEntity(StudentClassEntity entity) {
