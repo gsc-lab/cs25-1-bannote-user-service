@@ -82,6 +82,28 @@ public class StudentClass {
         );
     }
 
+    public static StudentClass update(
+        StudentClassCode studentClassCode,
+        StudentClassName studentClassName,
+        Year admissionYear,
+        Year graduationYear,
+        StudentClassStatus status
+    ) {
+        return new StudentClass(
+                null,
+                null,
+                studentClassCode,
+                studentClassName,
+                admissionYear,
+                graduationYear,
+                status,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
     private void validate() {
         if (admissionYear != null && graduationYear != null) {
             if (admissionYear.isAfter(graduationYear) || admissionYear.equals(graduationYear)) {

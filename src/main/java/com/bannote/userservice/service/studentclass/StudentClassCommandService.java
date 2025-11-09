@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.time.Year;
 
 @Service
 @Transactional
@@ -78,17 +79,70 @@ public class StudentClassCommandService {
         }
     }
 
+    public StudentClass updateStudentClass(StudentClass studentClass) {
+
+        StudentClassEntity studentClassEntity = studentClassQueryService.getStudentClassEntityByCode(
+                studentClass.getStudentClassCode().getValue()
+        );
+
+        // TODO 학과 변경 추가 검토
+
+        if (studentClass.getStudentClassName() != null) {
+            validateDuplicateName(studentClass.getStudentClassName(), studentClassEntity);
+            studentClassEntity.setName(studentClass.getStudentClassName().getValue());
+        }
+
+        Year admissionYear = studentClass.getAdmissionYear() != null ?
+                studentClass.getAdmissionYear() : studentClassEntity.getAdmissionYear();
+        Year graduationYear = studentClass.getGraduationYear() != null ?
+                studentClass.getGraduationYear() : studentClassEntity.getGraduationYear();
+
+        validateYearRange(admissionYear, graduationYear);
+
+        if (studentClass.getAdmissionYear() != null) {
+            studentClassEntity.setAdmissionYear(admissionYear);
+        }
+        if (studentClass.getGraduationYear() != null) {
+            studentClassEntity.setGraduationYear(graduationYear);
+        }
+
+        if (studentClass.getStatus() != null) {
+            studentClassEntity.setStatus(studentClass.getStatus());
+        }
+
+        return StudentClass.fromEntity(studentClassEntity);
+    }
+
     /**
      * 동일 학과 내에서 학반 이름 중복 검증
      * @param name 학반 이름
-     * @param departmentEntity 학과 엔티티
+     * @param studentClassEntity 학반 엔티티
      */
+    private void validateDuplicateName(StudentClassName name, StudentClassEntity studentClassEntity) {
+        validateDuplicateName(name, studentClassEntity.getDepartment());
+    }
+
     private void validateDuplicateName(StudentClassName name, DepartmentEntity departmentEntity) {
         if (studentClassQueryService.existsByNameAndDepartment(name, departmentEntity)) {
             throw new UserServiceException(
                     ErrorCode.DUPLICATE_STUDENT_CLASS_NAME,
                     String.format("Student class name '%s' already exists in department '%s'",
                             name.getValue(), departmentEntity.getName())
+            );
+        }
+    }
+
+    /**
+     * 입학연도와 졸업연도 범위 검증
+     * @param admissionYear 입학연도
+     * @param graduationYear 졸업연도
+     */
+    private void validateYearRange(Year admissionYear, Year graduationYear) {
+        if (admissionYear.isAfter(graduationYear) || admissionYear.equals(graduationYear)) {
+            throw new UserServiceException(
+                    ErrorCode.INVALID_ARGUMENT,
+                    String.format("Admission year (%d) must be before graduation year (%d)",
+                            admissionYear.getValue(), graduationYear.getValue())
             );
         }
     }

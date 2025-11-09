@@ -48,7 +48,15 @@ public class StudentClassApplicationService {
 
     public StudentClass updateStudentClass(UpdateStudentClassRequest request) {
 
-        return null;
+        StudentClass studentClass = StudentClass.update(
+                StudentClassCode.of(request.getStudentClassCode()),
+                request.hasStudentClassName() ? StudentClassName.of(request.getStudentClassName()) : null,
+                request.hasAdmissionYear() ? Year.of(request.getAdmissionYear()) : null,
+                request.hasGraduationYear() ? Year.of(request.getGraduationYear()) : null,
+                request.hasStatus() ? StudentClassStatus.of(request.getStatus()) : null
+        );
+
+        return studentClassCommandService.updateStudentClass(studentClass);
     }
 
     public StudentClass deleteStudentClass(DeleteStudentClassRequest request) {
