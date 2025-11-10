@@ -78,7 +78,7 @@ public class DepartmentApplicationService {
      */
     public Page<Department> listDepartments(ListDepartmentsRequest request) {
 
-        Page<DepartmentEntity> departmentEntities = departmentQueryService.getDepartments(
+        Page<DepartmentEntity> departmentEntities = departmentQueryService.listDepartments(
                 request.getPage(),
                 request.getSize()
         );
