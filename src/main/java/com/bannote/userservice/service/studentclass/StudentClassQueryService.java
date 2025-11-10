@@ -3,12 +3,16 @@ package com.bannote.userservice.service.studentclass;
 import com.bannote.userservice.domain.studentclass.StudentClass;
 import com.bannote.userservice.domain.studentclass.field.StudentClassCode;
 import com.bannote.userservice.domain.studentclass.field.StudentClassName;
+import com.bannote.userservice.domain.studentclass.field.StudentClassStatus;
 import com.bannote.userservice.entity.DepartmentEntity;
 import com.bannote.userservice.entity.StudentClassEntity;
 import com.bannote.userservice.exception.ErrorCode;
 import com.bannote.userservice.exception.UserServiceException;
 import com.bannote.userservice.repository.StudentClassEntityRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,4 +80,30 @@ public class StudentClassQueryService {
 
         return studentClassEntityRepository.existsByNameAndDepartment(name.getValue(), departmentEntity);
     }
+
+    /**
+     * 학과의 학반 목록 페이징 조회
+     * @param departmentEntity 학과 엔티티
+     * @param status 학반 상태
+     * @param page 페이지 번호 (0부터 시작)
+     * @param size 페이지 크기
+     * @return 페이징된 학반 엔티티 목록
+     */
+    public Page<StudentClassEntity> listStudentClassesByDepartment(DepartmentEntity departmentEntity, StudentClassStatus status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return studentClassEntityRepository.findAllByDepartmentAndStatus(departmentEntity, status, pageable);
+    }
+
+    /**
+     * 학반 목록 페이징 조회
+     * @param status 학반 상태
+     * @param page 페이지 번호 (0부터 시작)
+     * @param size 페이지 크기
+     * @return 페이징된 학반 엔티티 목록
+     */
+    public Page<StudentClassEntity> listStudentClasses(StudentClassStatus status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return studentClassEntityRepository.findAllByStatus(status, pageable);
+    }
+
 }

@@ -6,6 +6,7 @@ import com.bannote.userservice.domain.studentclass.field.StudentClassCode;
 import com.bannote.userservice.domain.studentclass.field.StudentClassName;
 import com.bannote.userservice.domain.studentclass.field.StudentClassStatus;
 import com.bannote.userservice.entity.DepartmentEntity;
+import com.bannote.userservice.entity.StudentClassEntity;
 import com.bannote.userservice.proto.student_class.v1.*;
 import com.bannote.userservice.service.department.DepartmentQueryService;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +65,32 @@ public class StudentClassApplicationService {
         return studentClassCommandService.deleteStudentClass(StudentClassCode.of(request.getStudentClassCode()));
     }
 
+    /**
+     * 학반 목록 페이징 조회
+     * @param request
+     * @return
+     */
     public Page<StudentClass> listStudentClasses(ListStudentClassesRequest request) {
-        return null;
+
+        Page<StudentClassEntity> studentClassEntityPage;
+
+        if (request.hasDepartmentCode()) {
+            DepartmentEntity departmentEntity = departmentQueryService.getDepartmentEntityByCode(request.getDepartmentCode());
+
+            studentClassEntityPage = studentClassQueryService.listStudentClassesByDepartment(
+                    departmentEntity,
+                    StudentClassStatus.of(request.getStatus()),
+                    request.getPage(),
+                    request.getSize()
+            );
+        } else {
+            studentClassEntityPage = studentClassQueryService.listStudentClasses(
+                    StudentClassStatus.of(request.getStatus()),
+                    request.getPage(),
+                    request.getSize()
+            );
+        }
+
+        return studentClassEntityPage.map(StudentClass::fromEntity);
     }
 }
