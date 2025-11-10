@@ -81,7 +81,7 @@ public class DepartmentQueryService {
      * @param size 페이지 크기
      * @return 페이징된 학과 엔티티 목록
      */
-    public Page<DepartmentEntity> getDepartments(int page, int size) {
+    public Page<DepartmentEntity> listDepartments(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return departmentEntityRepository.findAll(pageable);
     }
