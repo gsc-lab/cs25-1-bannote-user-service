@@ -21,6 +21,8 @@ public enum ErrorCode {
     // Student class related errors
     STUDENT_CLASS_NOT_FOUND(Status.NOT_FOUND, "Student class not found"),
     STUDENT_CLASS_DEPARTMENT_MISMATCH(Status.INVALID_ARGUMENT, "Student class does not belong to the specified department"),
+    DUPLICATE_STUDENT_CLASS_CODE(Status.ALREADY_EXISTS, "Student class Code already exists"),
+    DUPLICATE_STUDENT_CLASS_NAME(Status.ALREADY_EXISTS, "Student class Name already exists within the department"),
 
     // Validation errors
     REQUIRED_FIELD_MISSING(Status.INVALID_ARGUMENT, "Required field is missing"),
@@ -32,9 +34,8 @@ public enum ErrorCode {
     UNAUTHORIZED(Status.UNAUTHENTICATED, "Authentication is required"),
     FORBIDDEN(Status.PERMISSION_DENIED, "Insufficient permissions"),
 
-    ENTITY_TO_DOMAIN_CONVERSION_FAILED(Status.INTERNAL, "Failed to convert entity to domain"),
-    ;
+    ENTITY_TO_DOMAIN_CONVERSION_FAILED(Status.INTERNAL, "Failed to convert entity to domain");
 
-    private Status status;
-    private String message;
+    private final Status status;
+    private final String message;
 }
