@@ -45,6 +45,8 @@ public class GrpcAuthInterceptor implements ServerInterceptor {
             fullMethodName.endsWith("UserService/CreateUser") ||
             fullMethodName.endsWith("DepartmentService/GetDepartment") ||
             fullMethodName.endsWith("DepartmentService/ListDepartments") ||
+            fullMethodName.endsWith("StudentClassService/GetStudentClass") ||
+            fullMethodName.endsWith("StudentClassService/ListStudentClasses") ||
             fullMethodName.startsWith("grpc.health.v1.Health/")) {
             log.debug("Skipping authentication for: {}", fullMethodName);
             return next.startCall(call, headers);
