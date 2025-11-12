@@ -34,7 +34,7 @@ public class StudentClassCommandService {
     public StudentClass createStudentClass(StudentClass studentClass, DepartmentEntity departmentEntity) {
 
         validateDuplicateCode(studentClass.getStudentClassCode());
-        validateDuplicateName(studentClass.getStudentClassName(), departmentEntity);
+        validateDuplicateName(studentClass.getStudentClassName(), departmentEntity, null);
 
         StudentClassEntity studentClassEntity = StudentClassEntity.create(
                 departmentEntity,
@@ -119,11 +119,11 @@ public class StudentClassCommandService {
      * @param studentClassEntity 학반 엔티티
      */
     private void validateDuplicateName(StudentClassName name, StudentClassEntity studentClassEntity) {
-        validateDuplicateName(name, studentClassEntity.getDepartment());
+        validateDuplicateName(name, studentClassEntity.getDepartment(), studentClassEntity);
     }
 
-    private void validateDuplicateName(StudentClassName name, DepartmentEntity departmentEntity) {
-        if (studentClassQueryService.existsByNameAndDepartment(name, departmentEntity)) {
+    private void validateDuplicateName(StudentClassName name, DepartmentEntity departmentEntity, StudentClassEntity studentClassEntity) {
+        if (studentClassQueryService.existsByNameAndDepartment(name, departmentEntity, studentClassEntity)) {
             throw new UserServiceException(
                     ErrorCode.DUPLICATE_STUDENT_CLASS_NAME,
                     String.format("Student class name '%s' already exists in department '%s'",

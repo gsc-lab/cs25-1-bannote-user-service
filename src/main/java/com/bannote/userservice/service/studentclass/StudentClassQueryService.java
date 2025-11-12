@@ -74,9 +74,14 @@ public class StudentClassQueryService {
      * 동일 학과 내에 같은 이름의 학반이 있는지 확인
      * @param name 학반 이름
      * @param departmentEntity 학과 엔티티
+     * @param studentClassEntity 학반 엔티티
      * @return 존재할 경우 True, 존재 하지 않은 경우 False
      */
-    public boolean existsByNameAndDepartment(StudentClassName name, DepartmentEntity departmentEntity) {
+    public boolean existsByNameAndDepartment(StudentClassName name, DepartmentEntity departmentEntity, StudentClassEntity studentClassEntity) {
+
+        if (studentClassEntity != null && name.getValue().equals(studentClassEntity.getName())) {
+            return false;
+        }
 
         return studentClassEntityRepository.existsByNameAndDepartment(name.getValue(), departmentEntity);
     }
@@ -89,21 +94,9 @@ public class StudentClassQueryService {
      * @param size 페이지 크기
      * @return 페이징된 학반 엔티티 목록
      */
-    public Page<StudentClassEntity> listStudentClassesByDepartment(DepartmentEntity departmentEntity, StudentClassStatus status, int page, int size) {
+    public Page<StudentClassEntity> listStudentClasses(DepartmentEntity departmentEntity, StudentClassStatus status, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return studentClassEntityRepository.findAllByDepartmentAndStatus(departmentEntity, status, pageable);
-    }
-
-    /**
-     * 학반 목록 페이징 조회
-     * @param status 학반 상태
-     * @param page 페이지 번호 (0부터 시작)
-     * @param size 페이지 크기
-     * @return 페이징된 학반 엔티티 목록
-     */
-    public Page<StudentClassEntity> listStudentClasses(StudentClassStatus status, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return studentClassEntityRepository.findAllByStatus(status, pageable);
     }
 
 }

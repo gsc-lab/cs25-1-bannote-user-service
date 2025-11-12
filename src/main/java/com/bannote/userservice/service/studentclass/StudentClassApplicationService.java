@@ -72,24 +72,14 @@ public class StudentClassApplicationService {
      */
     public Page<StudentClass> listStudentClasses(ListStudentClassesRequest request) {
 
-        Page<StudentClassEntity> studentClassEntityPage;
-
-        if (request.hasDepartmentCode()) {
-            DepartmentEntity departmentEntity = departmentQueryService.getDepartmentEntityByCode(request.getDepartmentCode());
-
-            studentClassEntityPage = studentClassQueryService.listStudentClassesByDepartment(
-                    departmentEntity,
-                    StudentClassStatus.of(request.getStatus()),
-                    request.getPage(),
-                    request.getSize()
-            );
-        } else {
-            studentClassEntityPage = studentClassQueryService.listStudentClasses(
-                    StudentClassStatus.of(request.getStatus()),
-                    request.getPage(),
-                    request.getSize()
-            );
-        }
+        Page<StudentClassEntity> studentClassEntityPage = studentClassQueryService.listStudentClasses(
+                request.hasDepartmentCode()
+                        ? departmentQueryService.getDepartmentEntityByCode(request.getDepartmentCode())
+                        : null,
+                request.hasStatus() ? StudentClassStatus.of(request.getStatus()) : null,
+                request.getPage(),
+                request.getSize()
+        );
 
         return studentClassEntityPage.map(StudentClass::fromEntity);
     }
