@@ -5,6 +5,7 @@ import com.bannote.userservice.domain.department.field.DepartmentCode;
 import com.bannote.userservice.domain.department.field.DepartmentName;
 import com.bannote.userservice.entity.DepartmentEntity;
 import com.bannote.userservice.proto.department.v1.*;
+import com.google.protobuf.ProtocolStringList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -84,5 +85,18 @@ public class DepartmentApplicationService {
         );
 
         return departmentEntities.map(Department::fromEntity);
+    }
+
+    public List<Department> getManyDepartments(GetManyDepartmentsRequest request) {
+
+        ProtocolStringList departmentCodesStringList = request.getDepartmentCodesList();
+
+        List<DepartmentCode> departmentCodesList = departmentCodesStringList.stream()
+                .map(DepartmentCode::of)
+                .toList();
+
+        return departmentQueryService.getManyDepartments(departmentCodesList).stream()
+                .map(Department::fromEntity)
+                .toList();
     }
 }

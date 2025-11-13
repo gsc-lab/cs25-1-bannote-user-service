@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.grpc.server.service.GrpcService;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @GrpcService
@@ -136,5 +137,20 @@ public class DepartmentGrpcService extends DepartmentServiceGrpc.DepartmentServi
                             .asRuntimeException()
             );
         }
+    }
+
+    @Override
+    public void getManyDepartments(GetManyDepartmentsRequest request, StreamObserver<GetManyDepartmentsResponse> responseObserver) {
+
+        List<Department> manyDepartments = departmentApplicationService.getManyDepartments(request);
+
+        GetManyDepartmentsResponse response = GetManyDepartmentsResponse.newBuilder()
+                .addAllDepartments(manyDepartments.stream()
+                        .map(Department::toProto)
+                        .toList()
+                ).build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 }
