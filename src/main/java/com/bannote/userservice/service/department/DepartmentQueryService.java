@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -86,4 +88,12 @@ public class DepartmentQueryService {
         return departmentEntityRepository.findAll(pageable);
     }
 
+    public List<DepartmentEntity> getManyDepartments(List<DepartmentCode> departmentCodesList) {
+
+        List<String> codes = departmentCodesList.stream()
+                .map(DepartmentCode::getValue)
+                .toList();
+
+        return departmentEntityRepository.findAllByCodeIn(codes);
+    }
 }
