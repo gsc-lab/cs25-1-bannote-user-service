@@ -10,11 +10,13 @@ import com.bannote.userservice.entity.StudentClassEntity;
 import com.bannote.userservice.exception.ErrorCode;
 import com.bannote.userservice.exception.UserServiceException;
 import com.bannote.userservice.proto.user.v1.CreateUserRequest;
+import com.bannote.userservice.proto.user.v1.ListUsersRequest;
 import com.bannote.userservice.proto.user.v1.UserLoginResponse;
 import com.bannote.userservice.service.allowedemail.AllowedEmailQueryService;
 import com.bannote.userservice.service.department.DepartmentQueryService;
 import com.bannote.userservice.service.studentclass.StudentClassQueryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -136,4 +138,23 @@ public class UserApplicationService {
         );
     }
 
+    public Page<UserDetail> listUsers(ListUsersRequest request) {
+
+        StudentClassEntity studentClassEntity = request.hasStudentClassCode()
+                ? studentClassQueryService.getStudentClassEntityByCode(request.getStudentClassCode())
+                : null;
+
+        DepartmentEntity departmentEntity = request.hasDepartmentCode()
+                ? departmentQueryService.getDepartmentEntityByCode(request.getDepartmentCode())
+                : null;
+
+        return userQueryService.listUsers(
+                request.hasType() ? UserType.of(request.getType()) : null,
+                request.hasStatus() ? UserStatus.of(request.getStatus()) : null,
+                studentClassEntity,
+                departmentEntity,
+                request.getPage(),
+                request.getSize()
+        );
+    }
 }
