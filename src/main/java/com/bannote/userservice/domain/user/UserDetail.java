@@ -98,6 +98,7 @@ public class UserDetail {
         builder.setUserStatus(this.userBasic.getUserStatus().toProto());
         builder.setBio(this.userBasic.getUserBio() != null ? this.userBasic.getUserBio().getValue() : "");
         builder.setProfileImageUrl(this.userBasic.getUserProfileImage().getValue());
+        builder.addAllUserRoles(this.userBasic.getUserRoles().toProtoList());
 
         if (this.userBasic.getCreatedAt() != null) {
             builder.setCreatedAt(com.google.protobuf.util.Timestamps.fromMillis(this.userBasic.getCreatedAt().getTime()));
