@@ -2,14 +2,17 @@ package com.bannote.userservice.grpcservice;
 
 import com.bannote.userservice.context.AuthorizationUtil;
 import com.bannote.userservice.domain.studentclass.StudentClass;
+import com.bannote.userservice.domain.studentclass.field.StudentClassCode;
 import com.bannote.userservice.exception.UserServiceException;
 import com.bannote.userservice.proto.student_class.v1.*;
 import com.bannote.userservice.service.studentclass.StudentClassApplicationService;
+import com.google.protobuf.ProtocolStringList;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.grpc.server.service.GrpcService;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @GrpcService
@@ -135,5 +138,20 @@ public class StudentClassGrpcService extends StudentClassServiceGrpc.StudentClas
                             .asRuntimeException()
             );
         }
+    }
+
+    @Override
+    public void getManyStudentClasses(GetManyStudentClassesRequest request, StreamObserver<GetManyStudentClassesResponse> responseObserver) {
+
+        List<StudentClass> manyStudentClasses = service.getManyStudentClasses(request);
+
+        GetManyStudentClassesResponse response = GetManyStudentClassesResponse.newBuilder()
+                .addAllStudentClasses(manyStudentClasses.stream()
+                        .map(StudentClass::toProto)
+                        .toList())
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 }

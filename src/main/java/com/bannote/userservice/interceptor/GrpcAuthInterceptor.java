@@ -40,13 +40,16 @@ public class GrpcAuthInterceptor implements ServerInterceptor {
         log.debug("Processing gRPC call: {}", fullMethodName);
         System.out.println("Processing gRPC call " + fullMethodName);
 
+        // TODO 별도의 메서드로 분리
         // UserService와 Health 서비스는 인증 제외
         if (fullMethodName.endsWith("UserService/UserLogin") ||
             fullMethodName.endsWith("UserService/CreateUser") ||
             fullMethodName.endsWith("DepartmentService/GetDepartment") ||
             fullMethodName.endsWith("DepartmentService/ListDepartments") ||
+            fullMethodName.endsWith("DepartmentService/GetManyDepartments") ||
             fullMethodName.endsWith("StudentClassService/GetStudentClass") ||
             fullMethodName.endsWith("StudentClassService/ListStudentClasses") ||
+            fullMethodName.endsWith("StudentClassService/GetManyStudentClasses") ||
             fullMethodName.startsWith("grpc.health.v1.Health/")) {
             log.debug("Skipping authentication for: {}", fullMethodName);
             return next.startCall(call, headers);
