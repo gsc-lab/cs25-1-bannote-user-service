@@ -4,6 +4,9 @@ import com.bannote.userservice.domain.department.field.DepartmentCode;
 import com.bannote.userservice.domain.department.field.DepartmentName;
 import com.bannote.userservice.domain.studentclass.field.StudentClassCode;
 import com.bannote.userservice.domain.studentclass.field.StudentClassName;
+import com.bannote.userservice.entity.DepartmentEntity;
+import com.bannote.userservice.entity.StudentClassEntity;
+import com.bannote.userservice.entity.UserEntity;
 import lombok.Getter;
 
 @Getter
@@ -64,6 +67,32 @@ public class UserDetail {
                 null,
                 employee.getDepartmentCode(),
                 employee.getDepartmentName()
+        );
+    }
+
+    public static UserDetail fromEntity(UserEntity userEntity) {
+        UserBasic userBasic = UserBasic.fromEntity(userEntity);
+        StudentClassEntity studentClass = null;
+        DepartmentEntity department = null;
+        DepartmentEntity studentDepartment = null;
+
+        if (userEntity.getType().isStudent() && userEntity.getStudent() != null) {
+            studentClass = userEntity.getStudent().getStudentClass();
+            if (studentClass != null) {
+                studentDepartment = studentClass.getDepartment();
+            }
+        } else if (userEntity.getType().isEmployee() && userEntity.getEmployee() != null) {
+            department = userEntity.getEmployee().getDepartment();
+        }
+
+        return new UserDetail(
+                userBasic,
+                studentClass != null ? StudentClassCode.of(studentClass.getCode()) : null,
+                studentClass != null ? StudentClassName.of(studentClass.getName()) : null,
+                studentDepartment != null ? DepartmentCode.of(studentDepartment.getCode())
+                        : department != null ? DepartmentCode.of(department.getCode()) : null,
+                studentDepartment != null ? DepartmentName.of(studentDepartment.getName())
+                        : department != null ? DepartmentName.of(department.getName()) : null
         );
     }
 

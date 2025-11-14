@@ -6,11 +6,18 @@ import com.bannote.userservice.domain.user.UserBasic;
 import com.bannote.userservice.domain.user.UserDetail;
 import com.bannote.userservice.domain.user.field.UserCode;
 import com.bannote.userservice.domain.user.field.UserEmail;
+import com.bannote.userservice.domain.user.field.UserStatus;
+import com.bannote.userservice.domain.user.field.UserType;
+import com.bannote.userservice.entity.DepartmentEntity;
+import com.bannote.userservice.entity.StudentClassEntity;
 import com.bannote.userservice.entity.UserEntity;
 import com.bannote.userservice.exception.ErrorCode;
 import com.bannote.userservice.exception.UserServiceException;
 import com.bannote.userservice.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +56,27 @@ public class UserQueryService {
      */
     public Boolean existsByCode(UserCode code) {
         return userEntityRepository.existsByCode(code.getValue());
+    }
+
+    public Page<UserDetail> listUsers(
+            UserType userType,
+            UserStatus userStatus,
+            StudentClassEntity studentClassEntity,
+            DepartmentEntity departmentEntity,
+            int page,
+            int size
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserEntity> userEntityPage = userEntityRepository.findAllUserDetailByStudentClassAndTypeAndStatus(
+                userType,
+                userStatus,
+                studentClassEntity,
+                departmentEntity,
+                pageable
+        );
+
+        return userEntityPage.map(UserDetail::fromEntity);
     }
 
     /**

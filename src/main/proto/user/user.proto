@@ -68,4 +68,3 @@ message UserDetail {
   optional string department_code = 30;
   optional string department_name = 31;
 }
-
