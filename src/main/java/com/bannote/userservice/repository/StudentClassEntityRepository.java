@@ -1,5 +1,6 @@
 package com.bannote.userservice.repository;
 
+import com.bannote.userservice.domain.studentclass.StudentClass;
 import com.bannote.userservice.domain.studentclass.field.StudentClassStatus;
 import com.bannote.userservice.entity.DepartmentEntity;
 import com.bannote.userservice.entity.StudentClassEntity;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -29,4 +31,5 @@ public interface StudentClassEntityRepository extends JpaRepository<StudentClass
             Pageable pageable
     );
 
+    List<StudentClassEntity> findAllByCodeIn(List<String> codes);
 }

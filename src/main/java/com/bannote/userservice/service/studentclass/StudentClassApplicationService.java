@@ -9,12 +9,14 @@ import com.bannote.userservice.entity.DepartmentEntity;
 import com.bannote.userservice.entity.StudentClassEntity;
 import com.bannote.userservice.proto.student_class.v1.*;
 import com.bannote.userservice.service.department.DepartmentQueryService;
+import com.google.protobuf.ProtocolStringList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Year;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -82,5 +84,16 @@ public class StudentClassApplicationService {
         );
 
         return studentClassEntityPage.map(StudentClass::fromEntity);
+    }
+
+    public List<StudentClass> getManyStudentClasses(GetManyStudentClassesRequest request) {
+
+        ProtocolStringList studentClassesCodeStringList = request.getStudentClassesCodeList();
+
+        List<StudentClassCode> studentClassCodeList = studentClassesCodeStringList.stream()
+                .map(StudentClassCode::of)
+                .toList();
+
+        return studentClassQueryService.getManyStudentClasses(studentClassCodeList);
     }
 }

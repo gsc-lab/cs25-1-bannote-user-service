@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -99,4 +101,14 @@ public class StudentClassQueryService {
         return studentClassEntityRepository.findAllByDepartmentAndStatus(departmentEntity, status, pageable);
     }
 
+    public List<StudentClass> getManyStudentClasses(List<StudentClassCode> studentClassCodeList) {
+
+        List<String> codes = studentClassCodeList.stream()
+                .map(StudentClassCode::getValue)
+                .toList();
+
+        return studentClassEntityRepository.findAllByCodeIn(codes).stream()
+                .map(StudentClass::fromEntity)
+                .toList();
+    }
 }
