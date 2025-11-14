@@ -41,6 +41,7 @@ message UserBasic {
   string profile_image_url = 9;
   google.protobuf.Timestamp created_at = 10;
   optional google.protobuf.Timestamp deleted_at = 11;
+  repeated bannote.userservice.common.v1.UserRole user_roles = 12;
 }
 
 // 유저 상세 정보
@@ -57,6 +58,7 @@ message UserDetail {
   string profile_image_url = 9;
   google.protobuf.Timestamp created_at = 10;
   optional google.protobuf.Timestamp deleted_at = 11;
+  repeated bannote.userservice.common.v1.UserRole user_roles = 12;
 
   // 학생 전용 필드 (type이 STUDENT일 때만)
   optional string student_class_code = 20;
