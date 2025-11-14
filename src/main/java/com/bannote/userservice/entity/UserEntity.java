@@ -16,7 +16,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "\"user\"", indexes = {
-        @Index(name = "idx_userentity_unq", columnList = "user_code", unique = true)
+        @Index(name = "idx_userentity_unq", columnList = "code", unique = true)
 })
 @Getter
 @NoArgsConstructor
