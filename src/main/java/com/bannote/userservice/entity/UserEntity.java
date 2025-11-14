@@ -1,6 +1,6 @@
 package com.bannote.userservice.entity;
 
-import com.bannote.userservice.domain.user.field.UserBio;
+import com.bannote.userservice.domain.user.field.UserRole;
 import com.bannote.userservice.domain.user.field.UserStatus;
 import com.bannote.userservice.domain.user.field.UserType;
 import jakarta.persistence.*;
@@ -11,6 +11,7 @@ import org.hibernate.annotations.SQLDelete;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -76,12 +77,28 @@ public class UserEntity {
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private EmployeeEntity employee;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserRoleEntity> roles;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserRoleEntity> roles = new ArrayList<>();
 
     @PrePersist
     void createdAt() {
         this.createdAt = Timestamp.from(Instant.now());
+    }
+
+    /**
+     * 사용자에게 역할 추가
+     * @param role 추가할 역할
+     * @param createdBy 역할을 부여한 사용자 ID (시스템이 부여하는 경우 null)
+     */
+    public void addRole(UserRole role, String createdBy) {
+        // 중복 체크
+        boolean exists = this.roles.stream()
+                .anyMatch(r -> r.getRole() == role);
+
+        if (!exists) {
+            UserRoleEntity userRoleEntity = UserRoleEntity.create(this, role, createdBy);
+            this.roles.add(userRoleEntity);
+        }
     }
 
     public static UserEntity create(

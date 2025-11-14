@@ -3,6 +3,7 @@ package com.bannote.userservice.service.user;
 import com.bannote.userservice.domain.user.Employee;
 import com.bannote.userservice.domain.user.Student;
 import com.bannote.userservice.domain.user.UserBasic;
+import com.bannote.userservice.domain.user.field.UserRole;
 import com.bannote.userservice.entity.*;
 import com.bannote.userservice.exception.ErrorCode;
 import com.bannote.userservice.exception.UserServiceException;
@@ -29,6 +30,9 @@ public class UserCommandService {
 
         UserEntity userEntity = createUserEntity(userBasic);
 
+        // 기본 역할 추가
+        userEntity.addRole(UserRole.DEFAULT, null);
+
         UserEntity saved = userEntityRepository.save(userEntity);
 
         return UserBasic.fromEntity(saved);
@@ -44,6 +48,9 @@ public class UserCommandService {
     public Employee createEmployee(UserBasic userBasic, DepartmentEntity department) {
         // UserEntity 생성
         UserEntity userEntity = createUserEntity(userBasic);
+
+        // 기본 역할 추가 (직원은 DEFAULT만)
+        userEntity.addRole(UserRole.DEFAULT, null);
 
         // EmployeeEntity 생성 및 연관관계 설정
         EmployeeEntity employeeEntity = EmployeeEntity.create(userEntity, department);
@@ -65,6 +72,10 @@ public class UserCommandService {
     public Student createStudent(UserBasic userBasic, StudentClassEntity studentClass) {
         // UserEntity 생성
         UserEntity userEntity = createUserEntity(userBasic);
+
+        // 학생 역할 추가 (DEFAULT + STUDENT)
+        userEntity.addRole(UserRole.DEFAULT, null);
+        userEntity.addRole(UserRole.STUDENT, null);
 
         // StudentEntity 생성 및 연관관계 설정
         StudentEntity studentEntity = StudentEntity.create(userEntity, studentClass);

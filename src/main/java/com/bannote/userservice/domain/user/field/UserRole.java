@@ -8,6 +8,7 @@ import lombok.Getter;
 
 @Getter
 public enum UserRole {
+    DEFAULT(0, "Default"),
     STUDENT(10, "Student"),                    // 학생
     DOORKEEPER(20, "Doorkeeper"),              // 키지기
     CLASS_REP(30, "Class Representative"),     // 반대표
@@ -36,6 +37,7 @@ public enum UserRole {
 
     public static UserRole of(com.bannote.userservice.proto.common.v1.UserRole proto) {
         return switch (proto) {
+            case USER_ROLE_DEFAULT -> DEFAULT;
             case USER_ROLE_STUDENT -> STUDENT;
             case USER_ROLE_DOORKEEPER -> DOORKEEPER;
             case USER_ROLE_CLASS_REP -> CLASS_REP;
@@ -49,6 +51,7 @@ public enum UserRole {
 
     public com.bannote.userservice.proto.common.v1.UserRole toProto() {
         return switch (this) {
+            case DEFAULT -> com.bannote.userservice.proto.common.v1.UserRole.USER_ROLE_DEFAULT;
             case STUDENT -> com.bannote.userservice.proto.common.v1.UserRole.USER_ROLE_STUDENT;
             case DOORKEEPER -> com.bannote.userservice.proto.common.v1.UserRole.USER_ROLE_DOORKEEPER;
             case CLASS_REP -> com.bannote.userservice.proto.common.v1.UserRole.USER_ROLE_CLASS_REP;

@@ -3,9 +3,9 @@ package com.bannote.userservice.entity;
 import com.bannote.userservice.domain.user.field.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
 @Table(name = "\"user_role\"",
@@ -31,12 +31,17 @@ public class UserRoleEntity {
     private Timestamp createdAt;
 
     @Column(name = "created_by")
-    private Long createdBy;
+    private String createdBy;
+
+    @PrePersist
+    void createdAt() {
+        this.createdAt = Timestamp.from(Instant.now());
+    }
 
     public static UserRoleEntity create(
             UserEntity user,
             UserRole role,
-            Long createdBy
+            String createdBy
     ) {
         UserRoleEntity userRoleEntity = new UserRoleEntity();
         userRoleEntity.user = user;

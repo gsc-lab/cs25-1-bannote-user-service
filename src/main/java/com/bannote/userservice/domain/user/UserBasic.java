@@ -10,8 +10,6 @@ import java.sql.Timestamp;
 @Getter
 public class UserBasic {
 
-    // TODO: 유저 권한 관련 필드 추가 필요
-
     private final Long userId;
     private final UserCode userCode;
     private final UserEmail userEmail;
@@ -23,6 +21,7 @@ public class UserBasic {
     @With private final UserProfileImage userProfileImage;
     private final Timestamp createdAt;
     private final Timestamp deletedAt;
+    private final UserRoles userRoles;
 
     private UserBasic(
             Long userId,
@@ -35,7 +34,8 @@ public class UserBasic {
             UserBio userBio,
             UserProfileImage userProfileImage,
             Timestamp createdAt,
-            Timestamp deletedAt
+            Timestamp deletedAt,
+            UserRoles userRoles
     ) {
         this.userId = userId;
         this.userCode = userCode;
@@ -48,6 +48,7 @@ public class UserBasic {
         this.userProfileImage = userProfileImage != null ? userProfileImage : UserProfileImage.of("");
         this.createdAt = createdAt;
         this.deletedAt = deletedAt;
+        this.userRoles = userRoles;
     }
 
     public String getUserName() {
@@ -78,6 +79,7 @@ public class UserBasic {
                 UserBio.of(""),
                 userProfileImage != null ? userProfileImage : UserProfileImage.of(""),
                 null,
+                null,
                 null
         );
     }
@@ -94,7 +96,8 @@ public class UserBasic {
                 UserBio.of(userEntity.getBio()),
                 UserProfileImage.of(userEntity.getProfileImage()),
                 userEntity.getCreatedAt(),
-                userEntity.getDeletedAt()
+                userEntity.getDeletedAt(),
+                UserRoles.of(userEntity.getRoles())
         );
     }
 
@@ -109,7 +112,8 @@ public class UserBasic {
                 .setStatus(this.userStatus.toProto())
                 .setBio(this.userBio.getValue())
                 .setProfileImageUrl(this.userProfileImage.getValue())
-                .setCreatedAt(com.google.protobuf.util.Timestamps.fromMillis(this.createdAt.getTime()));
+                .setCreatedAt(com.google.protobuf.util.Timestamps.fromMillis(this.createdAt.getTime()))
+                .addAllUserRoles(this.userRoles.toProtoList());
 
         if (this.deletedAt != null) {
             builder.setDeletedAt(com.google.protobuf.util.Timestamps.fromMillis(this.deletedAt.getTime()));

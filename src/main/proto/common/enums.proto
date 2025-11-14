@@ -40,4 +40,5 @@ enum UserRole {
   USER_ROLE_TA = 4;             // 조교
   USER_ROLE_PROFESSOR = 5;      // 교수
   USER_ROLE_ADMIN = 6;          // 관리자
+  USER_ROLE_DEFAULT = 7;        // 기본 역할
 }
