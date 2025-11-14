@@ -10,12 +10,9 @@ spring:
       ddl-auto: create-drop
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
-        hbm2ddl:
-          auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
-    generate-ddl: true
 
   h2:
     console:
