@@ -24,6 +24,9 @@ public enum ErrorCode {
     DUPLICATE_STUDENT_CLASS_CODE(Status.ALREADY_EXISTS, "Student class Code already exists"),
     DUPLICATE_STUDENT_CLASS_NAME(Status.ALREADY_EXISTS, "Student class Name already exists within the department"),
 
+    ALLOWED_DOMAIN_NOT_FOUND(Status.NOT_FOUND, "Domain not found"),
+    DUPLICATE_ALLOWED_DOMAIN(Status.ALREADY_EXISTS, "Domain is already allowed"),
+
     // Validation errors
     REQUIRED_FIELD_MISSING(Status.INVALID_ARGUMENT, "Required field is missing"),
     INVALID_FORMAT(Status.INVALID_ARGUMENT, "Field format is invalid"),
