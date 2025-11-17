@@ -2,6 +2,7 @@ package com.bannote.userservice.grpcservice;
 
 import com.bannote.userservice.context.AuthorizationUtil;
 import com.bannote.userservice.domain.allowedDomain.AllowedDomain;
+import com.bannote.userservice.domain.user.field.UserEmail;
 import com.bannote.userservice.proto.allowed_domain.v1.*;
 import com.bannote.userservice.service.alloweddomain.AllowedDomainApplicationService;
 import io.grpc.stub.StreamObserver;
@@ -59,6 +60,21 @@ public class AllowedDomainGrpcService extends AllowedDomainServiceGrpc.AllowedDo
                 .setTotalCount(Math.toIntExact(allowedDomainsPage.getTotalElements()))
                 .setPage(request.getPage())
                 .setSize(request.getSize())
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void checkAllowedDomain(CheckAllowedDomainRequest request, StreamObserver<CheckAllowedDomainResponse> responseObserver) {
+
+        Boolean isAllowed = service.checkAllowedDomain(request);
+        String domain = UserEmail.of(request.getEmail()).getDomain();
+
+        CheckAllowedDomainResponse response = CheckAllowedDomainResponse.newBuilder()
+                .setIsAllowed(isAllowed)
+                .setDomain(domain)
                 .build();
 
         responseObserver.onNext(response);

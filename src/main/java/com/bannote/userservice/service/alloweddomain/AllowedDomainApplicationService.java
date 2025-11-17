@@ -2,10 +2,12 @@ package com.bannote.userservice.service.alloweddomain;
 
 import com.bannote.userservice.domain.allowedDomain.AllowedDomain;
 import com.bannote.userservice.domain.allowedDomain.field.Domain;
+import com.bannote.userservice.domain.user.field.UserEmail;
 import com.bannote.userservice.entity.AllowedDomainEntity;
 import com.bannote.userservice.exception.ErrorCode;
 import com.bannote.userservice.exception.UserServiceException;
 import com.bannote.userservice.proto.allowed_domain.v1.AddAllowedDomainRequest;
+import com.bannote.userservice.proto.allowed_domain.v1.CheckAllowedDomainRequest;
 import com.bannote.userservice.proto.allowed_domain.v1.ListAllowedDomainRequest;
 import com.bannote.userservice.proto.allowed_domain.v1.RemoveAllowedDomainRequest;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +50,12 @@ public class AllowedDomainApplicationService {
         );
 
         return allowedDomainEntities.map(AllowedDomain::fromEntity);
+    }
+
+    public Boolean checkAllowedDomain(CheckAllowedDomainRequest request) {
+
+        UserEmail email = UserEmail.of(request.getEmail());
+
+        return queryService.isAllowed(email);
     }
 }
