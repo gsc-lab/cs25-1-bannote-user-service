@@ -12,7 +12,7 @@ import com.bannote.userservice.exception.UserServiceException;
 import com.bannote.userservice.proto.user.v1.CreateUserRequest;
 import com.bannote.userservice.proto.user.v1.ListUsersRequest;
 import com.bannote.userservice.proto.user.v1.UserLoginResponse;
-import com.bannote.userservice.service.allowedemail.AllowedEmailQueryService;
+import com.bannote.userservice.service.alloweddomain.AllowedDomainQueryService;
 import com.bannote.userservice.service.department.DepartmentQueryService;
 import com.bannote.userservice.service.studentclass.StudentClassQueryService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class UserApplicationService {
 
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
-    private final AllowedEmailQueryService allowedEmailQueryService;
+    private final AllowedDomainQueryService allowedEmailQueryService;
     private final DepartmentQueryService departmentQueryService;
     private final StudentClassQueryService studentClassQueryService;
 

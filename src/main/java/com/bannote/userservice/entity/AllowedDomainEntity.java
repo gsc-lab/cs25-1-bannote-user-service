@@ -1,20 +1,21 @@
 package com.bannote.userservice.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 
-// TODO email은 뜻이 상충하기에 AllowedDomain 으로 변경 필요
 @Entity
-public class AllowedEmailEntity {
+@Getter
+public class AllowedDomainEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "email", unique = true, nullable = false)
-    private String email;
+    @Column(name = "domain", unique = true, nullable = false)
+    private String domain;
 
     @Column(name = "created_at")
     private Timestamp createdAt;
@@ -27,13 +28,13 @@ public class AllowedEmailEntity {
         this.createdAt = Timestamp.from(Instant.now());
     }
 
-    public static AllowedEmailEntity create(
-            String email,
+    public static AllowedDomainEntity create(
+            String domain,
             String createdBy
     ) {
-        AllowedEmailEntity allowedEmailEntity = new AllowedEmailEntity();
-        allowedEmailEntity.email = email;
-        allowedEmailEntity.createdBy = createdBy;
-        return allowedEmailEntity;
+        AllowedDomainEntity allowedDomain = new AllowedDomainEntity();
+        allowedDomain.domain = domain;
+        allowedDomain.createdBy = createdBy;
+        return allowedDomain;
     }
 }
