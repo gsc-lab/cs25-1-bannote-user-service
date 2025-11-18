@@ -1,5 +1,7 @@
 package com.bannote.userservice.service.studentclass;
 
+import com.bannote.commonservice.proto.events.v1.StudentClassChangedEvent;
+import com.bannote.userservice.context.AuthorizationUtil;
 import com.bannote.userservice.domain.department.Department;
 import com.bannote.userservice.domain.studentclass.StudentClass;
 import com.bannote.userservice.domain.studentclass.field.StudentClassCode;
@@ -7,16 +9,21 @@ import com.bannote.userservice.domain.studentclass.field.StudentClassName;
 import com.bannote.userservice.domain.studentclass.field.StudentClassStatus;
 import com.bannote.userservice.entity.DepartmentEntity;
 import com.bannote.userservice.entity.StudentClassEntity;
+import com.bannote.userservice.event.studentclass.StudentClassCreatedEvent;
+import com.bannote.userservice.event.studentclass.StudentClassDeletedEvent;
+import com.bannote.userservice.event.studentclass.StudentClassUpdatedEvent;
 import com.bannote.userservice.proto.student_class.v1.*;
 import com.bannote.userservice.service.department.DepartmentQueryService;
 import com.google.protobuf.ProtocolStringList;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Year;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +33,7 @@ public class StudentClassApplicationService {
     private final StudentClassCommandService studentClassCommandService;
     private final StudentClassQueryService studentClassQueryService;
     private final DepartmentQueryService departmentQueryService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public StudentClass getStudentClass(GetStudentClassRequest request) {
 
@@ -46,7 +54,16 @@ public class StudentClassApplicationService {
                 null
         );
 
-        return studentClassCommandService.createStudentClass(studentClass, departmentEntity);
+        StudentClass createdStudentClass = studentClassCommandService.createStudentClass(studentClass, departmentEntity);
+
+        eventPublisher.publishEvent(
+                new StudentClassCreatedEvent(
+                        createdStudentClass,
+                        AuthorizationUtil.getCurrentAuthInfo().userCode().getValue()
+                )
+        );
+
+        return createdStudentClass;
     }
 
     public StudentClass updateStudentClass(UpdateStudentClassRequest request) {
@@ -59,12 +76,30 @@ public class StudentClassApplicationService {
                 request.hasStatus() ? StudentClassStatus.of(request.getStatus()) : null
         );
 
-        return studentClassCommandService.updateStudentClass(studentClass);
+        StudentClass updatedStudentClass = studentClassCommandService.updateStudentClass(studentClass);
+
+        eventPublisher.publishEvent(
+                new StudentClassUpdatedEvent(
+                        updatedStudentClass,
+                        AuthorizationUtil.getCurrentAuthInfo().userCode().getValue()
+                )
+        );
+
+        return updatedStudentClass;
     }
 
     public StudentClass deleteStudentClass(DeleteStudentClassRequest request) {
 
-        return studentClassCommandService.deleteStudentClass(StudentClassCode.of(request.getStudentClassCode()));
+        StudentClass deletedStudentClass = studentClassCommandService.deleteStudentClass(StudentClassCode.of(request.getStudentClassCode()));
+
+        eventPublisher.publishEvent(
+                new StudentClassDeletedEvent(
+                        deletedStudentClass,
+                        AuthorizationUtil.getCurrentAuthInfo().userCode().getValue()
+                )
+        );
+
+        return deletedStudentClass;
     }
 
     /**
