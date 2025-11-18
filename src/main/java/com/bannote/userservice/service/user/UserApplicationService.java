@@ -1,5 +1,6 @@
 package com.bannote.userservice.service.user;
 
+import com.bannote.userservice.context.AuthorizationUtil;
 import com.bannote.userservice.domain.user.Employee;
 import com.bannote.userservice.domain.user.Student;
 import com.bannote.userservice.domain.user.UserBasic;
@@ -7,6 +8,7 @@ import com.bannote.userservice.domain.user.UserDetail;
 import com.bannote.userservice.domain.user.field.*;
 import com.bannote.userservice.entity.DepartmentEntity;
 import com.bannote.userservice.entity.StudentClassEntity;
+import com.bannote.userservice.event.user.UserCreatedEvent;
 import com.bannote.userservice.exception.ErrorCode;
 import com.bannote.userservice.exception.UserServiceException;
 import com.bannote.userservice.proto.user.v1.CreateUserRequest;
@@ -16,6 +18,7 @@ import com.bannote.userservice.service.alloweddomain.AllowedDomainQueryService;
 import com.bannote.userservice.service.department.DepartmentQueryService;
 import com.bannote.userservice.service.studentclass.StudentClassQueryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +33,7 @@ public class UserApplicationService {
     private final AllowedDomainQueryService allowedEmailQueryService;
     private final DepartmentQueryService departmentQueryService;
     private final StudentClassQueryService studentClassQueryService;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 유저 로그인 처리
@@ -61,7 +65,18 @@ public class UserApplicationService {
 
         UserBasic userBasic = userCommandService.createUserBasic(buildUserBasic(request));
 
-        return UserDetail.ofBasic(userBasic);
+        UserDetail createdUserDetail = UserDetail.ofBasic(userBasic);
+
+        eventPublisher.publishEvent(
+                new UserCreatedEvent(
+                        createdUserDetail,
+                        AuthorizationUtil.hasAuthInfo()
+                                ? AuthorizationUtil.getCurrentAuthInfo().userCode().getValue()
+                                : createdUserDetail.getUserBasic().getUserCode().getValue()
+                )
+        );
+
+        return createdUserDetail;
     }
 
     /**
@@ -92,7 +107,18 @@ public class UserApplicationService {
         // 학생 생성 (유저 + 학생 정보)
         Student student = userCommandService.createStudent(userBasic, studentClassEntity);
 
-        return UserDetail.ofStudent(student);
+        UserDetail createdUserDetail = UserDetail.ofStudent(student);
+
+        eventPublisher.publishEvent(
+                new UserCreatedEvent(
+                        createdUserDetail,
+                        AuthorizationUtil.hasAuthInfo()
+                                ? AuthorizationUtil.getCurrentAuthInfo().userCode().getValue()
+                                : createdUserDetail.getUserBasic().getUserCode().getValue()
+                )
+        );
+
+        return createdUserDetail;
     }
 
     /**
@@ -111,8 +137,18 @@ public class UserApplicationService {
         // 직원 생성 (유저 + 직원 정보)
         Employee employee = userCommandService.createEmployee(userBasic, department);
 
-        // UserDetail 생성 및 반환
-        return UserDetail.ofEmployee(employee);
+        UserDetail createdUserDetail = UserDetail.ofEmployee(employee);
+
+        eventPublisher.publishEvent(
+                new UserCreatedEvent(
+                        createdUserDetail,
+                        AuthorizationUtil.hasAuthInfo()
+                                ? AuthorizationUtil.getCurrentAuthInfo().userCode().getValue()
+                                : createdUserDetail.getUserBasic().getUserCode().getValue()
+                )
+        );
+
+        return createdUserDetail;
     }
 
     /**

@@ -49,6 +49,14 @@ public class AuthorizationUtil {
     }
 
     /**
+     * 현재 인증된 사용자 정보가 존재하는지 확인
+     */
+    public static boolean hasAuthInfo() {
+        AuthInfo authInfo = UserContext.getAuthInfo();
+        return authInfo != null;
+    }
+
+    /**
      * ADMIN 권한 확인
      */
     public static void requireAdmin() {
