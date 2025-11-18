@@ -10,6 +10,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
+    topics:
+      user: user.changed
+      department: department.changed
+      student-class: student-class.changed
 grpc:
   server:
     port: ${GRPC_PORT}
