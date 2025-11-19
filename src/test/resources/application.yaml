@@ -19,8 +19,11 @@ spring:
       enabled: false
 
   kafka:
-    bootstrap-servers: localhost:9095
     topics:
       user: user.changed
       department: department.changed
       student-class: student-class.changed
+
+grpc:
+  server:
+    port: 0
