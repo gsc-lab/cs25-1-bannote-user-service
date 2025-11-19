@@ -8,6 +8,7 @@ import com.bannote.userservice.domain.user.field.UserRole;
 import com.bannote.userservice.exception.ErrorCode;
 import com.bannote.userservice.exception.UserServiceException;
 import io.grpc.*;
+import io.grpc.Contexts;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -68,37 +69,15 @@ public class GrpcAuthInterceptor implements ServerInterceptor {
             UserCode userCode = UserCode.of(userCodeValue);
             UserRoles userRoles = parseUserRoles(userRoleValue);
 
-            // AuthInfo 생성 및 스레드 컨텍스트에 저장
+            // AuthInfo 생성
             AuthInfo authInfo = new AuthInfo(userCode, userRoles);
-            UserContext.setAuthInfo(authInfo);
 
             log.info("Authentication successful - UserCode: {}, UserRole: {}",
                 userCode.getValue(), userRoles);
 
-            // 요청 처리 후 컨텍스트 정리를 위한 리스너 래핑
-            return new ForwardingServerCallListener.SimpleForwardingServerCallListener<>(
-                    next.startCall(call, headers)) {
-
-                @Override
-                public void onComplete() {
-                    try {
-                        super.onComplete();
-                    } finally {
-                        UserContext.clear();
-                        log.debug("UserContext cleared after request completion");
-                    }
-                }
-
-                @Override
-                public void onCancel() {
-                    try {
-                        super.onCancel();
-                    } finally {
-                        UserContext.clear();
-                        log.debug("UserContext cleared after request cancellation");
-                    }
-                }
-            };
+            // gRPC Context에 AuthInfo 저장하고 다음 핸들러 호출
+            Context context = Context.current().withValue(UserContext.getKey(), authInfo);
+            return Contexts.interceptCall(context, call, headers, next);
 
         } catch (UserServiceException e) {
             log.error("Authentication failed: {}", e.getMessage());
