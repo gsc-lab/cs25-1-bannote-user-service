@@ -11,7 +11,7 @@ spring:
       ddl-auto: update
     show-sql: true
   kafka:
-    bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
     topics:
       user: user.changed
       department: department.changed
