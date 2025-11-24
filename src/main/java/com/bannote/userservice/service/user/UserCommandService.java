@@ -3,6 +3,7 @@ package com.bannote.userservice.service.user;
 import com.bannote.userservice.domain.user.Employee;
 import com.bannote.userservice.domain.user.Student;
 import com.bannote.userservice.domain.user.UserBasic;
+import com.bannote.userservice.domain.user.UserDetail;
 import com.bannote.userservice.domain.user.field.UserRole;
 import com.bannote.userservice.entity.*;
 import com.bannote.userservice.exception.ErrorCode;
@@ -11,6 +12,8 @@ import com.bannote.userservice.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -127,4 +130,28 @@ public class UserCommandService {
         );
     }
 
+    public UserDetail updateUser(UserBasic update) {
+
+        UserEntity entity = userQueryService.getUserEntityByCode(update.getUserCode());
+
+        if (update.getUserFamilyName() != null) {
+            entity.setFamilyName(update.getUserFamilyName().getValue());
+        }
+
+        if (update.getUserGivenName() != null) {
+            entity.setGivenName(update.getUserGivenName().getValue());
+        }
+
+        if (!Objects.equals(update.getUserBio().getValue(), "")) {
+            entity.setBio(update.getUserBio().getValue());
+        }
+
+        if (update.getUserProfileImage() != null) {
+            entity.setProfileImage(update.getUserProfileImage().getValue());
+        }
+
+        entity.setName(entity.getFamilyName() + " " + entity.getGivenName());
+
+        return UserDetail.fromEntity(entity);
+    }
 }

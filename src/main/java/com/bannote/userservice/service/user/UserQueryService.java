@@ -93,4 +93,13 @@ public class UserQueryService {
         };
     }
 
+    public UserEntity getUserEntityByCode(UserCode userCode) {
+        return userEntityRepository.findByCode(userCode.getValue())
+                .orElseThrow(
+                        () -> new UserServiceException(
+                                ErrorCode.USER_NOT_FOUND,
+                                "User not found with code: " + userCode.getValue()
+                        )
+                );
+    }
 }

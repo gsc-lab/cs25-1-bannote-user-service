@@ -73,12 +73,12 @@ message CreateUserResponse {
 
 // 본인이 스스로 변경 가능한 정보
 message UpdateUserRequest {
-  string user_number = 1;
+  string user_code = 1;
   optional string email = 2;
   optional string family_name = 3;
   optional string given_name = 4;
   optional string bio = 5;
-  optional string profile = 6;
+  optional string profile_image_url = 6;
 }
 
 message UpdateUserResponse {

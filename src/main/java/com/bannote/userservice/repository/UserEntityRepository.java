@@ -48,4 +48,6 @@ public interface UserEntityRepository extends JpaRepository<UserEntity, Long> {
             @Param("department") DepartmentEntity department,
             Pageable pageable
     );
+
+    Optional<UserEntity> findByCode(String code);
 }

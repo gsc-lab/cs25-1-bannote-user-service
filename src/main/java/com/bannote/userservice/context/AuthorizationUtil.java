@@ -102,7 +102,10 @@ public class AuthorizationUtil {
                 authInfo.userCode().getValue(), targetUserCode);
             throw new UserServiceException(
                 ErrorCode.FORBIDDEN,
-                "Can only access own resources"
+                String.format("Can only access own resources - User '%s' tried to access '%s' resource",
+                        authInfo.userCode().getValue(),
+                        targetUserCode
+                )
             );
         }
     }

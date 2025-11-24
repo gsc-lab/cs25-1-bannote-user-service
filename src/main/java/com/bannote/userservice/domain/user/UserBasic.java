@@ -84,6 +84,29 @@ public class UserBasic {
         );
     }
 
+    public static UserBasic update(
+            UserCode userCode,
+            UserFamilyName userFamilyName,
+            UserGivenName userGivenName,
+            UserBio userBio,
+            UserProfileImage userProfileImage
+    ) {
+        return new UserBasic(
+                null,
+                userCode,
+                null,
+                userFamilyName,
+                userGivenName,
+                null,
+                null,
+                userBio,
+                userProfileImage,
+                null,
+                null,
+                null
+        );
+    }
+
     public static UserBasic fromEntity(UserEntity userEntity) {
         return new UserBasic(
                 userEntity.getId(),

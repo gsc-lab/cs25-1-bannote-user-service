@@ -13,6 +13,7 @@ import com.bannote.userservice.exception.ErrorCode;
 import com.bannote.userservice.exception.UserServiceException;
 import com.bannote.userservice.proto.user.v1.CreateUserRequest;
 import com.bannote.userservice.proto.user.v1.ListUsersRequest;
+import com.bannote.userservice.proto.user.v1.UpdateUserRequest;
 import com.bannote.userservice.proto.user.v1.UserLoginResponse;
 import com.bannote.userservice.service.alloweddomain.AllowedDomainQueryService;
 import com.bannote.userservice.service.department.DepartmentQueryService;
@@ -192,5 +193,27 @@ public class UserApplicationService {
                 request.getPage(),
                 request.getSize()
         );
+    }
+
+    public UserDetail updateUser(UpdateUserRequest request) {
+
+        UserBasic update = UserBasic.update(
+                UserCode.of(request.getUserCode()),
+                request.hasFamilyName() ? UserFamilyName.of(request.getFamilyName()) : null,
+                request.hasGivenName() ? UserGivenName.of(request.getGivenName()) : null,
+                request.hasBio() ? UserBio.of(request.getBio()) : null,
+                request.hasProfileImageUrl() ? UserProfileImage.of(request.getProfileImageUrl()) : null
+        );
+
+        UserDetail updatedUserDetail = userCommandService.updateUser(update);
+
+        eventPublisher.publishEvent(
+                new UserCreatedEvent(
+                        updatedUserDetail,
+                        AuthorizationUtil.getCurrentAuthInfo().userCode().getValue()
+                )
+        );
+
+        return updatedUserDetail;
     }
 }
