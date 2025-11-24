@@ -76,4 +76,19 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void updateUser(UpdateUserRequest request, StreamObserver<UpdateUserResponse> responseObserver) {
+
+        AuthorizationUtil.requireSameUser(request.getUserCode());
+
+        UserDetail userDetail = userApplicationService.updateUser(request);
+
+        UpdateUserResponse response = UpdateUserResponse.newBuilder()
+                .setUser(userDetail.toProto())
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 }
