@@ -11,13 +11,11 @@ import com.bannote.userservice.entity.StudentClassEntity;
 import com.bannote.userservice.event.user.UserCreatedEvent;
 import com.bannote.userservice.exception.ErrorCode;
 import com.bannote.userservice.exception.UserServiceException;
-import com.bannote.userservice.proto.user.v1.CreateUserRequest;
-import com.bannote.userservice.proto.user.v1.ListUsersRequest;
-import com.bannote.userservice.proto.user.v1.UpdateUserRequest;
-import com.bannote.userservice.proto.user.v1.UserLoginResponse;
+import com.bannote.userservice.proto.user.v1.*;
 import com.bannote.userservice.service.alloweddomain.AllowedDomainQueryService;
 import com.bannote.userservice.service.department.DepartmentQueryService;
 import com.bannote.userservice.service.studentclass.StudentClassQueryService;
+import com.bannote.userservice.util.KoreanSearchUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -215,5 +213,21 @@ public class UserApplicationService {
         );
 
         return updatedUserDetail;
+    }
+
+    public Page<UserBasic> searchUsersByName(SearchUsersByNameRequest request) {
+
+        String nameSearchPattern = KoreanSearchUtils.toNameSearchPattern(request.getName());
+
+        UserType userType = request.hasType() ? UserType.of(request.getType()) : null;
+        UserStatus userStatus = request.hasStatus() ? UserStatus.of(request.getStatus()) : null;
+
+        return userQueryService.searchUserBasicsByName(
+                nameSearchPattern,
+                userType,
+                userStatus,
+                request.getPage(),
+                request.getSize()
+        );
     }
 }

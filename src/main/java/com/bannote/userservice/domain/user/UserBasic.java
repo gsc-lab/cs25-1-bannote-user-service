@@ -52,7 +52,7 @@ public class UserBasic {
     }
 
     public String getUserName() {
-         return String.format("%s %s", this.userFamilyName.getValue(), this.userGivenName.getValue());
+         return String.format("%s%s", this.userFamilyName.getValue(), this.userGivenName.getValue());
     }
 
     /**
