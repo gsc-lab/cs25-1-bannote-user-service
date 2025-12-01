@@ -79,6 +79,22 @@ public class UserQueryService {
         return userEntityPage.map(UserDetail::fromEntity);
     }
 
+    public Page<UserBasic> searchUserBasicsByName(
+            String name,
+            UserType type,
+            UserStatus status,
+            int page,
+            int size
+    ) {
+        // TODO: 추후 필요에 따라 type 및 status 필터링 추가
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return userEntityRepository
+                .searchByName(name, pageable)
+                .map(UserBasic::fromEntity);
+    }
+
     /**
      * UserEntity를 UserDetail로 변환
      */

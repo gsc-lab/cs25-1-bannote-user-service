@@ -50,4 +50,20 @@ public interface UserEntityRepository extends JpaRepository<UserEntity, Long> {
     );
 
     Optional<UserEntity> findByCode(String code);
+
+    /**
+     * 이름으로 사용자 검색 (초성 검색 지원)
+     * MySQL REGEXP를 사용하여 "김ㅅ" 검색 시 "김서동", "김수진" 등 매칭
+     * @param namePattern MySQL REGEXP 패턴 (KoreanSearchUtils.toNameSearchPattern() 사용)
+     * @param pageable 페이징 정보
+     * @return 검색된 사용자 목록
+     */
+    @Query(value = """
+        SELECT * FROM `user` u
+        WHERE u.deleted_at IS NULL
+        AND u.name REGEXP :namePattern
+        """, nativeQuery = true)
+    Page<UserEntity> searchByName(
+            @Param("namePattern") String namePattern,
+            Pageable pageable);
 }

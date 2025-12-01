@@ -1,6 +1,7 @@
 package com.bannote.userservice.grpcservice;
 
 import com.bannote.userservice.context.AuthorizationUtil;
+import com.bannote.userservice.domain.user.UserBasic;
 import com.bannote.userservice.domain.user.UserDetail;
 import com.bannote.userservice.exception.UserServiceException;
 import com.bannote.userservice.proto.user.v1.*;
@@ -86,6 +87,24 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
 
         UpdateUserResponse response = UpdateUserResponse.newBuilder()
                 .setUser(userDetail.toProto())
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void searchUsersByName(SearchUsersByNameRequest request, StreamObserver<SearchUsersByNameResponse> responseObserver) {
+
+        Page<UserBasic> userBasics = userApplicationService.searchUsersByName(request);
+
+        SearchUsersByNameResponse response = SearchUsersByNameResponse.newBuilder()
+                .addAllUsers(userBasics.getContent().stream()
+                        .map(UserBasic::toProto)
+                        .toList())
+                .setTotalCount(Math.toIntExact(userBasics.getTotalElements()))
+                .setPage(request.getPage())
+                .setSize(request.getSize())
                 .build();
 
         responseObserver.onNext(response);
