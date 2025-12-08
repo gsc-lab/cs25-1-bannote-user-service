@@ -3,6 +3,7 @@ package com.bannote.userservice.grpcservice;
 import com.bannote.userservice.context.AuthorizationUtil;
 import com.bannote.userservice.domain.user.UserBasic;
 import com.bannote.userservice.domain.user.UserDetail;
+import com.bannote.userservice.domain.user.field.UserRole;
 import com.bannote.userservice.exception.UserServiceException;
 import com.bannote.userservice.proto.user.v1.*;
 import com.bannote.userservice.service.user.UserApplicationService;
@@ -105,6 +106,21 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
                 .setTotalCount(Math.toIntExact(userBasics.getTotalElements()))
                 .setPage(request.getPage())
                 .setSize(request.getSize())
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getUser(GetUserRequest request, StreamObserver<GetUserResponse> responseObserver) {
+
+        AuthorizationUtil.requireSameUserOrAuthority(request.getUserCode(), UserRole.CLASS_REP);
+
+        UserDetail user = userApplicationService.getUser(request);
+
+        GetUserResponse response = GetUserResponse.newBuilder()
+                .setUser(user.toProto())
                 .build();
 
         responseObserver.onNext(response);

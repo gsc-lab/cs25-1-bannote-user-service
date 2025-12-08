@@ -118,4 +118,18 @@ public class UserQueryService {
                         )
                 );
     }
+
+    /**
+     * 유저 코드로 유저 상세 정보 조회
+     * @param code 유저 코드
+     * @return  UserDetail Optional 객체
+     */
+    public UserDetail getUserDetailByEmail(UserCode code) throws UserServiceException {
+        return userEntityRepository.findUserDetailByCode(code.getValue())
+                .map(UserDetail::fromEntity)
+                .orElseThrow(() -> new UserServiceException(
+                        ErrorCode.USER_NOT_FOUND,
+                        String.format("User not found %s", code.getValue())
+                ));
+    }
 }

@@ -27,6 +27,16 @@ public interface UserEntityRepository extends JpaRepository<UserEntity, Long> {
         """)
     Optional<UserEntity> findUserDetailByEmail(String email);
 
+    @Query("""
+        SELECT u FROM UserEntity u
+        LEFT JOIN FETCH u.student s
+        LEFT JOIN FETCH s.studentClass sc
+        LEFT JOIN FETCH sc.department d
+        LEFT JOIN FETCH u.roles r
+        WHERE u.code = :code
+        """)
+    Optional<UserEntity> findUserDetailByCode(String code);
+
     Boolean existsByEmail(String email);
     Boolean existsByCode(String studentCode);
 
