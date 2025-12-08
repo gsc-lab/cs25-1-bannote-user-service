@@ -230,4 +230,9 @@ public class UserApplicationService {
                 request.getSize()
         );
     }
+
+    public UserDetail getUser(GetUserRequest request) {
+
+        return userQueryService.getUserDetailByEmail(UserCode.of(request.getUserCode()));
+    }
 }
