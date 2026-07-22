@@ -1,0 +1,135 @@
+package com.bannote.userservice.service.user;
+
+import com.bannote.userservice.domain.user.Employee;
+import com.bannote.userservice.domain.user.Student;
+import com.bannote.userservice.domain.user.UserBasic;
+import com.bannote.userservice.domain.user.UserDetail;
+import com.bannote.userservice.domain.user.field.UserCode;
+import com.bannote.userservice.domain.user.field.UserEmail;
+import com.bannote.userservice.domain.user.field.UserStatus;
+import com.bannote.userservice.domain.user.field.UserType;
+import com.bannote.userservice.entity.DepartmentEntity;
+import com.bannote.userservice.entity.StudentClassEntity;
+import com.bannote.userservice.entity.UserEntity;
+import com.bannote.userservice.exception.ErrorCode;
+import com.bannote.userservice.exception.UserServiceException;
+import com.bannote.userservice.repository.UserEntityRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class UserQueryService {
+
+    private final UserEntityRepository userEntityRepository;
+
+    /**
+     * 이메일로 유저 상세 정보 조회
+     * @param email 이메일
+     * @return  UserDetail Optional 객체
+     */
+    public Optional<UserDetail> findUserDetailByEmail(String email) {
+        return userEntityRepository.findUserDetailByEmail(email)
+                .map(this::toUserDetail);
+    }
+
+    /**
+     * 이메일로 유저 존재 여부 확인
+     * @param email UserEmail 객체
+     * @return  존재하면 true, 없으면 false
+     */
+    public Boolean existsByEmail(UserEmail email) {
+        return userEntityRepository.existsByEmail(email.getValue());
+    }
+
+    /**
+     * 학번으로 유저 존재 여부 확인
+     * @param code UserCode 객체
+     * @return  존재하면 true, 없으면 false
+     */
+    public Boolean existsByCode(UserCode code) {
+        return userEntityRepository.existsByCode(code.getValue());
+    }
+
+    public Page<UserDetail> listUsers(
+            UserType userType,
+            UserStatus userStatus,
+            StudentClassEntity studentClassEntity,
+            DepartmentEntity departmentEntity,
+            int page,
+            int size
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserEntity> userEntityPage = userEntityRepository.findAllUserDetailByStudentClassAndTypeAndStatus(
+                userType,
+                userStatus,
+                studentClassEntity,
+                departmentEntity,
+                pageable
+        );
+
+        return userEntityPage.map(UserDetail::fromEntity);
+    }
+
+    public Page<UserBasic> searchUserBasicsByName(
+            String name,
+            UserType type,
+            UserStatus status,
+            int page,
+            int size
+    ) {
+        // TODO: 추후 필요에 따라 type 및 status 필터링 추가
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return userEntityRepository
+                .searchByName(name, pageable)
+                .map(UserBasic::fromEntity);
+    }
+
+    /**
+     * UserEntity를 UserDetail로 변환
+     */
+    private UserDetail toUserDetail(UserEntity userEntity) {
+        return switch (userEntity.getType()) {
+            case STUDENT -> UserDetail.ofStudent(Student.fromEntity(userEntity));
+            case EMPLOYEE -> UserDetail.ofEmployee(Employee.fromEntity(userEntity));
+            case SERVICE, OTHER -> UserDetail.ofBasic(UserBasic.fromEntity(userEntity));
+            default -> throw new UserServiceException(ErrorCode.ENTITY_TO_DOMAIN_CONVERSION_FAILED,
+                    String.format("Unknown user type: %s", userEntity.getType())
+            );
+        };
+    }
+
+    public UserEntity getUserEntityByCode(UserCode userCode) {
+        return userEntityRepository.findByCode(userCode.getValue())
+                .orElseThrow(
+                        () -> new UserServiceException(
+                                ErrorCode.USER_NOT_FOUND,
+                                "User not found with code: " + userCode.getValue()
+                        )
+                );
+    }
+
+    /**
+     * 유저 코드로 유저 상세 정보 조회
+     * @param code 유저 코드
+     * @return  UserDetail Optional 객체
+     */
+    public UserDetail getUserDetailByEmail(UserCode code) throws UserServiceException {
+        return userEntityRepository.findUserDetailByCode(code.getValue())
+                .map(UserDetail::fromEntity)
+                .orElseThrow(() -> new UserServiceException(
+                        ErrorCode.USER_NOT_FOUND,
+                        String.format("User not found %s", code.getValue())
+                ));
+    }
+}

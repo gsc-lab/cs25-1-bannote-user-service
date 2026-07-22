@@ -1,0 +1,238 @@
+package com.bannote.userservice.service.user;
+
+import com.bannote.userservice.context.AuthorizationUtil;
+import com.bannote.userservice.domain.user.Employee;
+import com.bannote.userservice.domain.user.Student;
+import com.bannote.userservice.domain.user.UserBasic;
+import com.bannote.userservice.domain.user.UserDetail;
+import com.bannote.userservice.domain.user.field.*;
+import com.bannote.userservice.entity.DepartmentEntity;
+import com.bannote.userservice.entity.StudentClassEntity;
+import com.bannote.userservice.event.user.UserCreatedEvent;
+import com.bannote.userservice.exception.ErrorCode;
+import com.bannote.userservice.exception.UserServiceException;
+import com.bannote.userservice.proto.user.v1.*;
+import com.bannote.userservice.service.alloweddomain.AllowedDomainQueryService;
+import com.bannote.userservice.service.department.DepartmentQueryService;
+import com.bannote.userservice.service.studentclass.StudentClassQueryService;
+import com.bannote.userservice.util.KoreanSearchUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class UserApplicationService {
+
+    private final UserCommandService userCommandService;
+    private final UserQueryService userQueryService;
+    private final AllowedDomainQueryService allowedEmailQueryService;
+    private final DepartmentQueryService departmentQueryService;
+    private final StudentClassQueryService studentClassQueryService;
+    private final ApplicationEventPublisher eventPublisher;
+
+    /**
+     * 유저 로그인 처리
+     * @param email 이메일
+     * @return UserLoginResponse 객체
+     */
+    public UserLoginResponse userLogin(String email) {
+
+        return userQueryService.findUserDetailByEmail(email)
+                .map(userDetail -> {
+                    return UserLoginResponse.newBuilder()
+                            .setExists(true)
+                            .setCanLogin(userDetail.isLoginAllowed())
+                            .setUser(userDetail.toProto())
+                            .build();
+                })
+                .orElse(UserLoginResponse.newBuilder()
+                        .setExists(false)
+                        .setCanLogin(false)
+                        .build());
+    }
+
+    /**
+     * 기본 유저 생성
+     * @param request CreateUserRequest 객체
+     * @return 생성된 UserDetail 객체
+     */
+    public UserDetail createUser(CreateUserRequest request) {
+
+        UserBasic userBasic = userCommandService.createUserBasic(buildUserBasic(request));
+
+        UserDetail createdUserDetail = UserDetail.ofBasic(userBasic);
+
+        eventPublisher.publishEvent(
+                new UserCreatedEvent(
+                        createdUserDetail,
+                        AuthorizationUtil.hasAuthInfo()
+                                ? AuthorizationUtil.getCurrentAuthInfo().userCode().getValue()
+                                : createdUserDetail.getUserBasic().getUserCode().getValue()
+                )
+        );
+
+        return createdUserDetail;
+    }
+
+    /**
+     * 학생 유저 생성
+     * @param request CreateUserRequest 객체
+     * @return 생성된 UserDetail 객체
+     */
+    public UserDetail createStudent(CreateUserRequest request) {
+
+        // 반과 학과가 올바르게 선택 되었는지 검증
+        StudentClassEntity studentClassEntity = studentClassQueryService
+                .getStudentClassEntityByCode(request.getStudentClassCode());
+
+        // 반의 학과 코드와 요청의 학과 코드가 일치하는지 검증
+        if (!studentClassEntity.getDepartment().getCode().equals(request.getDepartmentCode())) {
+            throw new UserServiceException(
+                    ErrorCode.STUDENT_CLASS_DEPARTMENT_MISMATCH,
+                    "Student class department does not match with provided department code. StudentClassCode: "
+                            + request.getStudentClassCode()
+                            + ", DepartmentCode: "
+                            + request.getDepartmentCode()
+            );
+        }
+
+        // 유저 기본 정보 생성
+        UserBasic userBasic = buildUserBasic(request);
+
+        // 학생 생성 (유저 + 학생 정보)
+        Student student = userCommandService.createStudent(userBasic, studentClassEntity);
+
+        UserDetail createdUserDetail = UserDetail.ofStudent(student);
+
+        eventPublisher.publishEvent(
+                new UserCreatedEvent(
+                        createdUserDetail,
+                        AuthorizationUtil.hasAuthInfo()
+                                ? AuthorizationUtil.getCurrentAuthInfo().userCode().getValue()
+                                : createdUserDetail.getUserBasic().getUserCode().getValue()
+                )
+        );
+
+        return createdUserDetail;
+    }
+
+    /**
+     * 직원 유저 생성
+     * @param request CreateUserRequest 객체
+     * @return 생성된 UserDetail 객체
+     */
+    public UserDetail createEmployee(CreateUserRequest request) {
+
+        // 학과가 올바르게 선택 되었는지 검증
+        DepartmentEntity department = departmentQueryService.getDepartmentEntityByCode(request.getDepartmentCode());
+
+        // 유저 기본 정보 생성
+        UserBasic userBasic = buildUserBasic(request);
+
+        // 직원 생성 (유저 + 직원 정보)
+        Employee employee = userCommandService.createEmployee(userBasic, department);
+
+        UserDetail createdUserDetail = UserDetail.ofEmployee(employee);
+
+        eventPublisher.publishEvent(
+                new UserCreatedEvent(
+                        createdUserDetail,
+                        AuthorizationUtil.hasAuthInfo()
+                                ? AuthorizationUtil.getCurrentAuthInfo().userCode().getValue()
+                                : createdUserDetail.getUserBasic().getUserCode().getValue()
+                )
+        );
+
+        return createdUserDetail;
+    }
+
+    /**
+     * CreateUserRequest로부터 UserBasic 객체 생성 (User 저장의 경우에 Entity를 생성하기 이전에 호출 하여 값을 검증)
+     * @param request CreateUserRequest 객체
+     * @return UserBasic 객체
+     */
+    private UserBasic buildUserBasic(CreateUserRequest request) {
+
+        UserEmail email = UserEmail.of(request.getUserEmail());
+
+        // 이메일 허용 여부 확인 (결과에 따라 유저 상태 결정)
+        Boolean allowed = allowedEmailQueryService.isAllowed(email);
+
+        return UserBasic.create(
+                UserCode.of(request.getUserCode()),
+                email,
+                UserFamilyName.of(request.getFamilyName()),
+                UserGivenName.of(request.getGivenName()),
+                UserType.of(request.getUserType()),
+                allowed ? UserStatus.ACTIVE : UserStatus.PENDING,
+                UserProfileImage.of(request.getProfileImageUrl())
+        );
+    }
+
+    public Page<UserDetail> listUsers(ListUsersRequest request) {
+
+        StudentClassEntity studentClassEntity = request.hasStudentClassCode()
+                ? studentClassQueryService.getStudentClassEntityByCode(request.getStudentClassCode())
+                : null;
+
+        DepartmentEntity departmentEntity = request.hasDepartmentCode()
+                ? departmentQueryService.getDepartmentEntityByCode(request.getDepartmentCode())
+                : null;
+
+        return userQueryService.listUsers(
+                request.hasType() ? UserType.of(request.getType()) : null,
+                request.hasStatus() ? UserStatus.of(request.getStatus()) : null,
+                studentClassEntity,
+                departmentEntity,
+                request.getPage(),
+                request.getSize()
+        );
+    }
+
+    public UserDetail updateUser(UpdateUserRequest request) {
+
+        UserBasic update = UserBasic.update(
+                UserCode.of(request.getUserCode()),
+                request.hasFamilyName() ? UserFamilyName.of(request.getFamilyName()) : null,
+                request.hasGivenName() ? UserGivenName.of(request.getGivenName()) : null,
+                request.hasBio() ? UserBio.of(request.getBio()) : null,
+                request.hasProfileImageUrl() ? UserProfileImage.of(request.getProfileImageUrl()) : null
+        );
+
+        UserDetail updatedUserDetail = userCommandService.updateUser(update);
+
+        eventPublisher.publishEvent(
+                new UserCreatedEvent(
+                        updatedUserDetail,
+                        AuthorizationUtil.getCurrentAuthInfo().userCode().getValue()
+                )
+        );
+
+        return updatedUserDetail;
+    }
+
+    public Page<UserBasic> searchUsersByName(SearchUsersByNameRequest request) {
+
+        String nameSearchPattern = KoreanSearchUtils.toNameSearchPattern(request.getName());
+
+        UserType userType = request.hasType() ? UserType.of(request.getType()) : null;
+        UserStatus userStatus = request.hasStatus() ? UserStatus.of(request.getStatus()) : null;
+
+        return userQueryService.searchUserBasicsByName(
+                nameSearchPattern,
+                userType,
+                userStatus,
+                request.getPage(),
+                request.getSize()
+        );
+    }
+
+    public UserDetail getUser(GetUserRequest request) {
+
+        return userQueryService.getUserDetailByEmail(UserCode.of(request.getUserCode()));
+    }
+}
